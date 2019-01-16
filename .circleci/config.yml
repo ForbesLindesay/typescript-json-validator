@@ -1,0 +1,80 @@
+version: 2
+
+refs:
+  container: &container
+    docker:
+      - image: node:10
+    working_directory: ~/repo
+  steps:
+    - &Versions
+      run:
+        name: Versions
+        command: node -v && npm -v && yarn -v
+    - &Install
+      run:
+        name: Install Dependencies
+        command: yarn install --pure-lockfile
+    - &Build
+      run:
+        name: Build
+        command: yarn build
+    - &Test
+      run:
+        name: Test
+        command: yarn ci:test
+
+jobs:
+  test:
+    <<: *container
+    steps:
+      - checkout
+      - *Versions
+      - *Install
+      - *Test
+      - *Build
+
+  publish:
+    <<: *container
+    steps:
+      - checkout
+      - *Versions
+      - *Install
+      - *Test
+      - *Build
+      - run:
+          name: NPM Auth
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      - run:
+          name: Release
+          command: |
+            npx semantic-release && \
+            npx cross-ci :run \
+                npx commit-status success Version "'\${PROJECT_VERSION}'"
+workflows:
+  version: 2
+  all:
+    jobs:
+      - test:
+          context: common-env
+          filters:
+            branches:
+              ignore:
+                - master
+                - gh-pages
+  master:
+    jobs:
+      - publish:
+          context: common-env
+          filters:
+            branches:
+              only: master
+  monthly:
+    triggers:
+      - schedule:
+          cron: '0 0 1 * *'
+          filters:
+            branches:
+              only: master
+    jobs:
+      - test:
+          context: common-env

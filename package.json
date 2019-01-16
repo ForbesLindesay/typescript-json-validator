@@ -1,0 +1,64 @@
+{
+  "name": "typescript-json-validator",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "bin": {
+    "typescript-json-validator": "./lib/cli.js"
+  },
+  "files": [
+    "lib/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ForbesLindesay/typescript-json-validator.git"
+  },
+  "scripts": {
+    "test": "jest --no-cache",
+    "test:coverage": "yarn test --coverage",
+    "test:watch": "yarn test --watch",
+    "clean": "rimraf lib && rimraf src/Example.validator.ts",
+    "prebuild": "yarn clean",
+    "build": "tsc",
+    "build:watch": "yarn build -w",
+    "postbuild": "node lib/usage && node lib/cli src/Example.ts ExampleType && rimraf lib/__tests__",
+    "precommit": "pretty-quick --staged",
+    "prepush": "yarn prettier:diff && yarn test",
+    "prettier": "prettier --ignore-path .gitignore --write './**/*.{js,jsx,ts,tsx}'",
+    "prettier:diff": "prettier --ignore-path .gitignore --list-different './**/*.{js,jsx,ts,tsx}'",
+    "ci:test": "yarn prettier:diff && yarn test"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.1.5",
+    "@types/node": "^10.5.2",
+    "husky": "^0.14.3",
+    "jest": "^23.3.0",
+    "prettier": "^1.13.7",
+    "pretty-quick": "^1.6.0",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.0.0",
+    "tslint": "^5.10.0",
+    "typescript": "^3.1.1"
+  },
+  "jest": {
+    "watchPathIgnorePatterns": [
+      "src/Example.validator.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "transformIgnorePatterns": [],
+    "testRegex": ".*/__tests__/.*\\.(test|spec)\\.ts$"
+  },
+  "dependencies": {
+    "@types/ajv": "^1.0.0",
+    "@types/cross-spawn": "^6.0.0",
+    "cross-spawn": "^6.0.5",
+    "typescript-json-schema": "^0.34.0",
+    "yargs": "^12.0.5"
+  }
+}
