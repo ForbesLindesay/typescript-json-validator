@@ -1,14 +1,16 @@
 import {resolve} from 'path';
 import * as TJS from 'typescript-json-schema';
+import loadTsConfig from './loadTsConfig';
 
 export default function parse(
   filenames: string[],
   settings: TJS.PartialArgs = {},
 ) {
   filenames = filenames.map(f => resolve(f));
-  const program = TJS.getProgramFromFiles(filenames, {
-    strictNullChecks: true,
-  });
+  const program = TJS.getProgramFromFiles(
+    filenames,
+    loadTsConfig(process.cwd()),
+  );
 
   const generator = TJS.buildGenerator(program, {
     rejectDateType: true,
