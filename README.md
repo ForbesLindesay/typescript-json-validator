@@ -46,12 +46,15 @@ Note that types will be validated automatically, but you can also use annotation
 ## CLI Docs
 
 <!-- USAGE -->
+
 ```
 Usage: typescript-json-schema <path-to-typescript-file> <type>
 
 Options:
   --help                Show help                                      [boolean]
   --version             Show version number                            [boolean]
+  --collection          Process the file as a collection of types, instead of
+                        one single type.              [boolean] [default: false]
   --refs                Create shared ref definitions. [boolean] [default: true]
   --aliasRefs           Create shared ref definitions for the type aliases.
                                                       [boolean] [default: false]
@@ -89,6 +92,7 @@ Options:
   -*                                                               [default: []]
 
 ```
+
 <!-- USAGE -->
 
 ## License
