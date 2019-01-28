@@ -4,6 +4,10 @@ import ExampleType from './Example';
 export const ajv = new Ajv({
   allErrors: true,
   coerceTypes: false,
+  format: 'fast',
+  nullable: true,
+  unicode: true,
+  uniqueItems: true,
   useDefaults: true,
 });
 
