@@ -120,7 +120,10 @@ export function validateKoaRequest(
     validator: any,
     ctx: Context,
   ): any => {
-    const data = (ctx as any)[prop];
+    const data =
+      prop === 'body'
+        ? ctx.request && (ctx.request as any).body
+        : (ctx as any)[prop];
     if (validator) {
       const valid = validator(data);
 
