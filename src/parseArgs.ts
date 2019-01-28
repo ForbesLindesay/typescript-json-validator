@@ -29,12 +29,9 @@ export function parseArgs(args?: string[]): ParsedArgs {
   const parsedArgs = require('yargs')
     .usage(helpText)
     .demand(1)
-    .boolean('collection')
-    .default('collection', false)
-    .describe(
-      'collection',
-      'Process the file as a collection of types, instead of one single type.',
-    )
+
+    // typescript-json-schema options
+
     .boolean('refs')
     .default('refs', defaultArgs.ref)
     .describe('refs', 'Create shared ref definitions.')
@@ -104,6 +101,45 @@ export function parseArgs(args?: string[]): ParsedArgs {
     .string('id')
     .default('id', defaultArgs.id)
     .describe('id', 'ID of schema.')
+
+    // ajv options
+
+    .boolean('uniqueItems')
+    .default('uniqueItems', true)
+    .describe('uniqueItems', 'Validate `uniqueItems` keyword')
+    .boolean('unicode')
+    .default('unicode', true)
+    .describe(
+      'unicode',
+      'calculate correct length of strings with unicode pairs (true by default). Pass false to use .length of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.',
+    )
+    .boolean('nullable')
+    .default('nullable', true)
+    .describe(
+      'nullable',
+      'support keyword "nullable" from Open API 3 specification.',
+    )
+    .choices('format', ['fast', 'full'])
+    .default('format', 'fast')
+    .describe(
+      'format',
+      "formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or false not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.",
+    )
+    .boolean('coerceTypes')
+    .default('coerceTypes', false)
+    .describe(
+      'coerceTypes',
+      'Change data type of data to match type keyword. e.g. parse numbers in strings',
+    )
+
+    // specific to typescript-json-validator
+
+    .boolean('collection')
+    .default('collection', false)
+    .describe(
+      'collection',
+      'Process the file as a collection of types, instead of one single type.',
+    )
     .boolean('useNamedExport')
     .default('useNamedExport', false)
     .describe(
@@ -149,6 +185,11 @@ export function parseArgs(args?: string[]): ParsedArgs {
         id: parsedArgs.id,
       },
       ajv: {
+        coerceTypes: parsedArgs.coerceTypes,
+        format: parsedArgs.format,
+        nullable: parsedArgs.nullable,
+        unicode: parsedArgs.unicode,
+        uniqueItems: parsedArgs.uniqueItems,
         useDefaults: parsedArgs.defaultProps,
       },
       useNamedExport: parsedArgs.useNamedExport,
