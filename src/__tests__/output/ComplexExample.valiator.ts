@@ -115,7 +115,11 @@ export function validateKoaRequest(
     `Schema#/definitions/${typeName}/properties/query`,
   );
   const body = ajv.getSchema(`Schema#/definitions/${typeName}/properties/body`);
-  const validate = (prop: string, validator: any, ctx: Context): any => {
+  const validateProperty = (
+    prop: string,
+    validator: any,
+    ctx: Context,
+  ): any => {
     const data = (ctx as any)[prop];
     if (validator) {
       const valid = validator(data);
@@ -134,9 +138,9 @@ export function validateKoaRequest(
   };
   return ctx => {
     return {
-      params: validate('params', params, ctx),
-      query: validate('query', query, ctx),
-      body: validate('body', body, ctx),
+      params: validateProperty('params', params, ctx),
+      query: validateProperty('query', query, ctx),
+      body: validateProperty('body', body, ctx),
     };
   };
 }

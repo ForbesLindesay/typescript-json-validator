@@ -98,7 +98,7 @@ export const VALIDATE_KOA_REQUEST_IMPLEMENTATION = `export function validateKoaR
   const params = ajv.getSchema(\`Schema#/definitions/\${typeName}/properties/params\`);
   const query = ajv.getSchema(\`Schema#/definitions/\${typeName}/properties/query\`);
   const body = ajv.getSchema(\`Schema#/definitions/\${typeName}/properties/body\`);
-  const validate = (
+  const validateProperty = (
     prop: string,
     validator: any,
     ctx: Context,
@@ -118,9 +118,9 @@ export const VALIDATE_KOA_REQUEST_IMPLEMENTATION = `export function validateKoaR
   };
   return (ctx) => {
     return {
-      params: validate('params', params, ctx),
-      query: validate('query', query, ctx),
-      body: validate('body', body, ctx),
+      params: validateProperty('params', params, ctx),
+      query: validateProperty('query', query, ctx),
+      body: validateProperty('body', body, ctx),
     }
   };
 }`;
