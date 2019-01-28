@@ -46,9 +46,11 @@ test('validateRequest', () => {
       id: 0,
       value: 'hello',
     },
-    body: {
-      id: 1,
-      value: '2019-01-25T19:09:28.179Z',
+    request: {
+      body: {
+        id: 1,
+        value: '2019-01-25T19:09:28.179Z',
+      },
     },
     throw: (number: number, message: string) => {
       throw new Error(`${number} <KOA ERROR> ${message}`);
