@@ -53,8 +53,6 @@ Usage: typescript-json-schema <path-to-typescript-file> <type>
 Options:
   --help                Show help                                      [boolean]
   --version             Show version number                            [boolean]
-  --collection          Process the file as a collection of types, instead of
-                        one single type.              [boolean] [default: false]
   --refs                Create shared ref definitions. [boolean] [default: true]
   --aliasRefs           Create shared ref definitions for the type aliases.
                                                       [boolean] [default: false]
@@ -87,6 +85,24 @@ Options:
   --rejectDateType      Rejects Date fields in type definitions.
                                                       [boolean] [default: false]
   --id                  ID of schema.                     [string] [default: ""]
+  --uniqueItems         Validate `uniqueItems` keyword [boolean] [default: true]
+  --unicode             calculate correct length of strings with unicode pairs
+                        (true by default). Pass false to use .length of strings
+                        that is faster, but gives "incorrect" lengths of strings
+                        with unicode pairs - each unicode pair is counted as two
+                        characters.                    [boolean] [default: true]
+  --nullable            support keyword "nullable" from Open API 3
+                        specification.                 [boolean] [default: true]
+  --format              formats validation mode ('fast' by default). Pass 'full'
+                        for more correct and slow validation or false not to
+                        validate formats at all. E.g., 25:00:00 and 2015/14/33
+                        will be invalid time and date in 'full' mode but it will
+                        be valid in 'fast' mode.
+                                     [choices: "fast", "full"] [default: "fast"]
+  --coerceTypes         Change data type of data to match type keyword. e.g.
+                        parse numbers in strings      [boolean] [default: false]
+  --collection          Process the file as a collection of types, instead of
+                        one single type.              [boolean] [default: false]
   --useNamedExport      Type name is a named export, rather than the default
                         export of the file            [boolean] [default: false]
   -*                                                               [default: []]

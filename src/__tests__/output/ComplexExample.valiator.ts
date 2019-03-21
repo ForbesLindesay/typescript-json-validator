@@ -1,6 +1,6 @@
-import {inspect} from 'util';
 import Ajv = require('ajv');
 import {Context} from 'koa';
+import {inspect} from 'util';
 import {MyEnum, TypeA, TypeB, RequestA, RequestB} from '../../ComplexExample';
 export const ajv = new Ajv({allErrors: true, coerceTypes: false});
 

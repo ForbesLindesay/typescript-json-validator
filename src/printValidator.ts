@@ -23,9 +23,8 @@ export function printTypeCollectionValidator(
     return isKoaType(schema.definitions && schema.definitions[typeName]);
   });
   return [
-    t.IMPORT_INSPECT,
     t.IMPORT_AJV,
-    ...(koaTypes.length ? [t.IMPORT_KOA_CONTEXT] : []),
+    ...(koaTypes.length ? [t.IMPORT_KOA_CONTEXT, t.IMPORT_INSPECT] : []),
     t.importNamedTypes(symbols, relativePath),
     t.declareAJV(options),
     t.exportNamed(symbols),
