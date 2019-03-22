@@ -55,7 +55,6 @@ workflows:
   all:
     jobs:
       - test:
-          context: common-env
           filters:
             branches:
               ignore:
