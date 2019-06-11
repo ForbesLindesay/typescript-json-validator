@@ -12,5 +12,9 @@ export default function loadTsConfig(cwd: string): any {
     // we need to disable it if experimentalDecorators support is off
     compilerOptions.emitDecoratorMetadata = false;
   }
+  if (compilerOptions.composite) {
+    // the composite setting adds a few constraints that cause us all manner of problems
+    compilerOptions.composite = false;
+  }
   return compilerOptions;
 }
