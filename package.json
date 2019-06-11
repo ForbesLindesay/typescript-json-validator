@@ -16,6 +16,7 @@
     "test": "jest --no-cache",
     "test:coverage": "yarn test --coverage",
     "test:watch": "yarn test --watch",
+    "posttest": "tsc --noEmit",
     "clean": "rimraf lib && rimraf src/Example.validator.ts",
     "prebuild": "yarn clean",
     "build": "tsc",
@@ -68,7 +69,7 @@
     "json-stable-stringify": "^1.0.1",
     "minimatch": "^3.0.4",
     "tsconfig": "^7.0.0",
-    "typescript-json-schema": "^0.38.0",
+    "typescript-json-schema": "^0.38.3",
     "yargs": "^13.2.4"
   }
 }

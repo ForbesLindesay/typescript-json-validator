@@ -1,7 +1,12 @@
 import Ajv = require('ajv');
-import {Context} from 'koa';
-import {inspect} from 'util';
 import {MyEnum, TypeA, TypeB, RequestA, RequestB} from '../../ComplexExample';
+import {inspect} from 'util';
+export interface KoaContext {
+  readonly request?: unknown; // {body?: unknown}
+  readonly params?: unknown;
+  readonly query?: unknown;
+  throw(status: 400, message: string): unknown;
+}
 export const ajv = new Ajv({allErrors: true, coerceTypes: false});
 
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
@@ -75,7 +80,7 @@ ajv.addSchema(Schema, 'Schema');
 export function validateKoaRequest(
   typeName: 'RequestA',
 ): (
-  ctx: Context,
+  ctx: KoaContext,
 ) => {
   params: RequestA['params'];
   query: RequestA['query'];
@@ -84,7 +89,7 @@ export function validateKoaRequest(
 export function validateKoaRequest(
   typeName: 'RequestB',
 ): (
-  ctx: Context,
+  ctx: KoaContext,
 ) => {
   params: unknown;
   query: RequestB['query'];
@@ -93,7 +98,7 @@ export function validateKoaRequest(
 export function validateKoaRequest(
   typeName: string,
 ): (
-  ctx: Context,
+  ctx: KoaContext,
 ) => {
   params: unknown;
   query: unknown;
@@ -102,7 +107,7 @@ export function validateKoaRequest(
 export function validateKoaRequest(
   typeName: string,
 ): (
-  ctx: Context,
+  ctx: KoaContext,
 ) => {
   params: any;
   query: any;
@@ -118,7 +123,7 @@ export function validateKoaRequest(
   const validateProperty = (
     prop: string,
     validator: any,
-    ctx: Context,
+    ctx: KoaContext,
   ): any => {
     const data =
       prop === 'body'
@@ -133,7 +138,11 @@ export function validateKoaRequest(
           'Invalid request: ' +
             ajv.errorsText(validator.errors, {dataVar: prop}) +
             '\n\n' +
-            inspect({params: ctx.params, query: ctx.query, body: ctx.body}),
+            inspect({
+              params: ctx.params,
+              query: ctx.query,
+              body: ctx.request && (ctx.request as any).body,
+            }),
         );
       }
     }
