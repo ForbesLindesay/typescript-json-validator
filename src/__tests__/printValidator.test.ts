@@ -3,18 +3,29 @@ import {printTypeCollectionValidator} from '../printValidator';
 import {writeFileSync} from 'fs';
 import prettierFile from '../prettierFile';
 
-let validate: typeof import('./output/ComplexExample.valiator') = undefined as any;
+let validate: typeof import('./output/ComplexExample.validator') = undefined as any;
 
 test('print', () => {
   const {symbols, schema} = parse([
     __dirname + '/../ComplexExample.ts',
   ]).getAllTypes();
   writeFileSync(
-    __dirname + '/output/ComplexExample.valiator.ts',
+    __dirname + '/output/ComplexExample.validator.ts',
     printTypeCollectionValidator(symbols, schema, '../../ComplexExample'),
   );
-  prettierFile(__dirname + '/output/ComplexExample.valiator.ts');
-  validate = require('./output/ComplexExample.valiator');
+  prettierFile(__dirname + '/output/ComplexExample.validator.ts');
+  writeFileSync(
+    __dirname + '/output/ComplexExample.usage.ts',
+    `
+  import {Context} from 'koa';
+  import {validateKoaRequest, RequestA} from './ComplexExample.validator';
+  
+  declare const x: Context;
+  export const y: RequestA = validateKoaRequest('RequestA')(x);
+  `,
+  );
+  prettierFile(__dirname + '/output/ComplexExample.usage.ts');
+  validate = require('./output/ComplexExample.validator');
 });
 test('validateValue', () => {
   expect(validate.validate('MyEnum')(0)).toBe(0);
