@@ -16,5 +16,6 @@ export default function loadTsConfig(cwd: string): any {
     // the composite setting adds a few constraints that cause us all manner of problems
     compilerOptions.composite = false;
   }
+  compilerOptions.incremental = false;
   return compilerOptions;
 }
