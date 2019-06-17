@@ -1,4 +1,4 @@
-import Ajv = require('ajv');
+import Ajv from 'ajv';
 import * as TJS from 'typescript-json-schema';
 import * as t from './template';
 

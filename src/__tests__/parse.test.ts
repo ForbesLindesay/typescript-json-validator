@@ -1,5 +1,5 @@
 import parse from '../parse';
-import Ajv = require('ajv');
+import Ajv from 'ajv';
 
 test('parse', () => {
   expect(parse([__dirname + '/../ComplexExample.ts']).getAllTypes())
