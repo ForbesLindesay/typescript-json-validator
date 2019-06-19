@@ -36,9 +36,9 @@ beforeAll(() => exec('yarn build', {cwd: process.cwd()}));
 
 afterAll(() => exec('rm tsconfig.json', {cwd: testDir}));
 
-afterEach(() => jest.resetAllMocks());
-
 test('ESNext module settings', () =>
+  // We expect a project not to build correctly if it has ES module
+  // target and no esModuleInterop.
   expect(buildProject('esnext')).rejects.toMatch('TS1202:'));
 
 test('ESNext interop module settings', () => buildProject('esnext-interop'));
