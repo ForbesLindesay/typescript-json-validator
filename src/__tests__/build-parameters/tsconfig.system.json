@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "module": "commonjs",
+    "module": "system",
     "moduleResolution": "Node",
     "noImplicitAny": true,
     "skipLibCheck": true,
@@ -10,7 +10,6 @@
     "pretty": true,
     "sourceMap": true,
     "strict": true,
-    "esModuleInterop": true,
     "outDir": "lib",
     "forceConsistentCasingInFileNames": true,
     "noEmitOnError": false,
@@ -20,9 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "declaration": true,
-    "lib": ["es2018"],
-    "incremental": true
+    "lib": ["es2018"]
   },
-  "include": ["src"],
-  "exclude": ["src/__tests__/build-parameters"]
+  "include": ["src"]
 }

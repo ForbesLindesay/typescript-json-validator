@@ -1,4 +1,5 @@
 import run from '../';
+
 // let validate: any;
 
 test('run', () => {

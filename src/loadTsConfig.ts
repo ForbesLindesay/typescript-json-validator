@@ -1,6 +1,6 @@
 import {loadSync} from 'tsconfig';
 
-export default function loadTsConfig(cwd: string): any {
+export default function loadTsConfig(cwd: string = process.cwd()): any {
   const result = loadSync(cwd);
   const compilerOptions =
     (result.config && result.config.compilerOptions) || {};

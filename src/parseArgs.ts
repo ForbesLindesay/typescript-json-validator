@@ -4,7 +4,7 @@ import {
   getDefaultArgs,
   Args as TypeScriptJsonSchemaArgs,
 } from 'typescript-json-schema';
-import Ajv = require('ajv');
+import Ajv from 'ajv';
 
 export interface Options {
   schema: Pick<

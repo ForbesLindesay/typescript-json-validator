@@ -10,7 +10,6 @@
     "pretty": true,
     "sourceMap": true,
     "strict": true,
-    "esModuleInterop": true,
     "outDir": "lib",
     "forceConsistentCasingInFileNames": true,
     "noEmitOnError": false,
@@ -21,8 +20,7 @@
     "noUnusedParameters": true,
     "declaration": true,
     "lib": ["es2018"],
-    "incremental": true
+    "esModuleInterop": true
   },
-  "include": ["src"],
-  "exclude": ["src/__tests__/build-parameters"]
+  "include": ["src"]
 }

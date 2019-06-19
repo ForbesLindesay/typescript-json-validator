@@ -1,9 +1,11 @@
 import parse from '../parse';
-import Ajv = require('ajv');
+import Ajv from 'ajv';
+import loadTsConfig from '../loadTsConfig';
 
 test('parse', () => {
-  expect(parse([__dirname + '/../ComplexExample.ts']).getAllTypes())
-    .toMatchInlineSnapshot(`
+  expect(
+    parse([__dirname + '/../ComplexExample.ts'], loadTsConfig()).getAllTypes(),
+  ).toMatchInlineSnapshot(`
 Object {
   "schema": Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -99,7 +101,9 @@ Object {
 });
 
 test('ajv', () => {
-  const parsed = parse([__dirname + '/../ComplexExample.ts'], {titles: true});
+  const parsed = parse([__dirname + '/../ComplexExample.ts'], loadTsConfig(), {
+    titles: true,
+  });
   const {schema} = parsed.getAllTypes();
   const ajv = new Ajv({coerceTypes: false, allErrors: true, useDefaults: true});
   ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));

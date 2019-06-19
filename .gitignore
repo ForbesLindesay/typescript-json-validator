@@ -20,8 +20,10 @@ node_modules
 .lock-wscript
 
 # Babel build output
-/lib
+lib
 
 # Config files
 environment.toml
 .env
+
+src/__tests__/**/*.validator.ts
