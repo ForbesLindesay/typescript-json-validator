@@ -7,6 +7,7 @@ import {
   printTypeCollectionValidator,
 } from './printValidator';
 import prettierFile from './prettierFile';
+import loadTsConfig from './loadTsConfig';
 
 export {
   parse,
@@ -17,8 +18,8 @@ export {
 
 export default function run(args?: string[]) {
   const {files, options} = parseArgs(args);
-
-  const parsed = parse(files.map(f => f.fileName), options.schema);
+  const tsConfig = loadTsConfig();
+  const parsed = parse(files.map(f => f.fileName), tsConfig, options.schema);
 
   files.forEach(({fileName, typeName}) => {
     const outputFileName = fileName.replace(/\.tsx?$/, '.validator.ts');
@@ -30,6 +31,7 @@ export default function run(args?: string[]) {
         options.useNamedExport,
         schema,
         `./${basename(fileName, /\.ts$/.test(fileName) ? '.ts' : '.tsx')}`,
+        tsConfig,
         options.ajv,
       );
     } else {
@@ -38,6 +40,7 @@ export default function run(args?: string[]) {
         symbols,
         schema,
         `./${basename(fileName, /\.ts$/.test(fileName) ? '.ts' : '.tsx')}`,
+        tsConfig,
         options.ajv,
       );
     }

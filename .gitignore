@@ -25,3 +25,5 @@ lib
 # Config files
 environment.toml
 .env
+
+src/__tests__/**/*.validator.ts
