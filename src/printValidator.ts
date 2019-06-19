@@ -25,7 +25,7 @@ export function printTypeCollectionValidator(
   return [
     t.TSLINT_DISABLE,
     t.GENERATED_COMMENT,
-    t.IMPORT_AJV,
+    t.IMPORT_AJV(),
     t.importNamedTypes(symbols, relativePath),
     ...(koaTypes.length ? [t.IMPORT_INSPECT, t.DECLARE_KOA_CONTEXT] : []),
     t.declareAJV(options),
@@ -55,7 +55,7 @@ export function printSingleTypeValidator(
     t.TSLINT_DISABLE,
     t.GENERATED_COMMENT,
     t.IMPORT_INSPECT,
-    t.IMPORT_AJV,
+    t.IMPORT_AJV(),
     t.importType(typeName, relativePath, {isNamedExport}),
     t.declareAJV(options),
     t.exportNamed([typeName]),

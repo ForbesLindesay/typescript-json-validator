@@ -20,7 +20,7 @@ node_modules
 .lock-wscript
 
 # Babel build output
-/lib
+lib
 
 # Config files
 environment.toml
