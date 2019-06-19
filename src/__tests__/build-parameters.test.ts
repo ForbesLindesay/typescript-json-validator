@@ -32,11 +32,10 @@ const buildProject = async (project: string) => {
 
 beforeAll(() => exec('yarn build', {cwd: process.cwd()}));
 
-afterAll(() => exec('rm tsconfig.json', {cwd: testDir}));
-
 afterEach(() =>
   Promise.all([
     rimraf(path.join(testDir, 'lib')),
+    exec('rm tsconfig.json', {cwd: testDir}),
     exec('rm src/Example.validator.ts', {cwd: testDir}),
   ]),
 );
