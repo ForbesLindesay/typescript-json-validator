@@ -25,8 +25,6 @@ const buildProject = async (project: string) => {
     cwd: testDir,
   });
 
-  await rimraf(path.join(testDir, 'lib'));
-
   await exec(`npx tsc --project ./tsconfig.json`, {
     cwd: testDir,
   });
@@ -35,6 +33,13 @@ const buildProject = async (project: string) => {
 beforeAll(() => exec('yarn build', {cwd: process.cwd()}));
 
 afterAll(() => exec('rm tsconfig.json', {cwd: testDir}));
+
+afterEach(() =>
+  Promise.all([
+    rimraf(path.join(testDir, 'lib')),
+    exec('rm src/Example.validator.ts', {cwd: testDir}),
+  ]),
+);
 
 test('ESNext module settings', () =>
   // We expect a project not to build correctly if it has ES module
