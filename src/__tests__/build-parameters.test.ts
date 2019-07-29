@@ -3,6 +3,8 @@ import {exec as execCB, ExecOptions} from 'child_process';
 import * as path from 'path';
 import {promisify} from 'util';
 
+jest.setTimeout(30000);
+
 const rimraf = promisify(rimrafCB);
 
 const testDir = path.join(__dirname, 'build-parameters');
