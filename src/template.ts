@@ -73,7 +73,23 @@ export default function validate(value: unknown): ${typeName} {
       inspect(value),
     );
   }
-}`;
+}
+
+export function is${typeName}(value: unknown, throwsOnError: boolean = false): value is ${typeName} {
+  if (rawValidate${typeName}(value)) {
+    return true;
+  } else {
+    if (!throwsOnError) {
+      return false
+    }
+    throw new Error(
+      ajv.errorsText(rawValidate${typeName}.errors, {dataVar: '${typeName}'}) +
+      '\\n\\n' +
+      inspect(value),
+    );
+  }
+}
+`;
 
 function typeOf(typeName: string, property: string, schema: TJS.Definition) {
   if (schema.definitions && schema.definitions[typeName]) {
