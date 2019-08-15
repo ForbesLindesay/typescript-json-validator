@@ -21,7 +21,7 @@
     "prebuild": "yarn clean",
     "build": "tsc",
     "build:watch": "yarn build -w",
-    "postbuild": "node lib/usage && node lib/cli src/Example.ts ExampleType && rimraf lib/__tests__",
+    "postbuild": "node lib/usage && node lib/cli src/Example.ts ExampleType && node lib/cli src/DisjointUnionExample.ts --collection && rimraf lib/__tests__",
     "precommit": "pretty-quick --staged",
     "prepush": "yarn prettier:diff && yarn test",
     "prettier": "prettier --ignore-path .gitignore --write './**/*.{js,jsx,ts,tsx}'",

@@ -45,7 +45,10 @@ export default function validate(value: unknown): ExampleType {
     return value;
   } else {
     throw new Error(
-      ajv.errorsText(rawValidateExampleType.errors, {dataVar: 'ExampleType'}) +
+      ajv.errorsText(
+        rawValidateExampleType.errors!.filter((e: any) => e.keyword !== 'if'),
+        {dataVar: 'ExampleType'},
+      ) +
         '\n\n' +
         inspect(value),
     );
