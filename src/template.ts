@@ -68,7 +68,7 @@ export default function validate(value: unknown): ${typeName} {
     return value;
   } else {
     throw new Error(
-      ajv.errorsText(rawValidate${typeName}.errors, {dataVar: '${typeName}'}) +
+      ajv.errorsText(rawValidate${typeName}.errors!.filter((e: any) => e.keyword !== 'if'), {dataVar: '${typeName}'}) +
       '\\n\\n' +
       inspect(value),
     );
@@ -124,7 +124,7 @@ export const VALIDATE_KOA_REQUEST_IMPLEMENTATION = `export function validateKoaR
       if (!valid) {
         ctx.throw(
           400,
-          'Invalid request: ' + ajv.errorsText(validator.errors, {dataVar: prop}) + '\\n\\n' + inspect({params: ctx.params, query: ctx.query, body: ctx.request && (ctx.request as any).body}),
+          'Invalid request: ' + ajv.errorsText(validator.errors!.filter((e: any) => e.keyword !== 'if'), {dataVar: prop}) + '\\n\\n' + inspect({params: ctx.params, query: ctx.query, body: ctx.request && (ctx.request as any).body}),
         );
       }
     }
@@ -152,7 +152,7 @@ export const VALIDATE_IMPLEMENTATION = `export function validate(typeName: strin
 
     if (!valid) {
       throw new Error(
-        'Invalid ' + typeName + ': ' + ajv.errorsText(validator.errors, {dataVar: typeName}),
+        'Invalid ' + typeName + ': ' + ajv.errorsText(validator.errors!.filter((e: any) => e.keyword !== 'if'), {dataVar: typeName}),
       );
     }
 
