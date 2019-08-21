@@ -17,5 +17,10 @@ export default function loadTsConfig(cwd: string = process.cwd()): any {
     compilerOptions.composite = false;
   }
   compilerOptions.incremental = false;
+
+  // since composite and incremental are false, Typescript will not accept tsBuildInfoFile
+  // https://github.com/microsoft/TypeScript/blob/dcb763f62435ebb015e7fa405eb067de3254f217/src/compiler/program.ts#L2847
+  delete compilerOptions.tsBuildInfoFile;
+
   return compilerOptions;
 }
