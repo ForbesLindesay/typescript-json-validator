@@ -62,28 +62,13 @@ export const compileSchema = (schemaName: string, typeName: string) =>
 export const validateFn = (
   typeName: string,
   schemaName: string,
-) => `const rawValidate${typeName} = ${compileSchema(schemaName, typeName)};
+) => `export const is${typeName} = ${compileSchema(schemaName, typeName)};
 export default function validate(value: unknown): ${typeName} {
-  if (rawValidate${typeName}(value)) {
+  if (is${typeName}(value)) {
     return value;
   } else {
     throw new Error(
-      ajv.errorsText(rawValidate${typeName}.errors, {dataVar: '${typeName}'}) +
-      '\\n\\n' +
-      inspect(value),
-    );
-  }
-}
-
-export function is${typeName}(value: unknown, throwsOnError: boolean = false): value is ${typeName} {
-  if (rawValidate${typeName}(value)) {
-    return true;
-  } else {
-    if (!throwsOnError) {
-      return false
-    }
-    throw new Error(
-      ajv.errorsText(rawValidate${typeName}.errors, {dataVar: '${typeName}'}) +
+      ajv.errorsText(is${typeName}.errors, {dataVar: '${typeName}'}) +
       '\\n\\n' +
       inspect(value),
     );
