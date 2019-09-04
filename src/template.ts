@@ -62,18 +62,19 @@ export const compileSchema = (schemaName: string, typeName: string) =>
 export const validateFn = (
   typeName: string,
   schemaName: string,
-) => `const rawValidate${typeName} = ${compileSchema(schemaName, typeName)};
+) => `export const is${typeName} = ${compileSchema(schemaName, typeName)};
 export default function validate(value: unknown): ${typeName} {
-  if (rawValidate${typeName}(value)) {
+  if (is${typeName}(value)) {
     return value;
   } else {
     throw new Error(
-      ajv.errorsText(rawValidate${typeName}.errors!.filter((e: any) => e.keyword !== 'if'), {dataVar: '${typeName}'}) +
+      ajv.errorsText(is${typeName}.errors!.filter((e: any) => e.keyword !== 'if'), {dataVar: '${typeName}'}) +
       '\\n\\n' +
       inspect(value),
     );
   }
-}`;
+}
+`;
 
 function typeOf(typeName: string, property: string, schema: TJS.Definition) {
   if (schema.definitions && schema.definitions[typeName]) {
