@@ -8,6 +8,7 @@ import {
 } from './printValidator';
 import prettierFile from './prettierFile';
 import loadTsConfig from './loadTsConfig';
+import normalizeSchema from './normalizeSchema';
 
 export {
   parse,
@@ -29,7 +30,7 @@ export default function run(args?: string[]) {
       validator = printSingleTypeValidator(
         typeName,
         options.useNamedExport,
-        schema,
+        normalizeSchema(schema),
         `./${basename(fileName, /\.ts$/.test(fileName) ? '.ts' : '.tsx')}`,
         tsConfig,
         options.ajv,
@@ -38,7 +39,7 @@ export default function run(args?: string[]) {
       const {symbols, schema} = parsed.getAllTypes();
       validator = printTypeCollectionValidator(
         symbols,
-        schema,
+        normalizeSchema(schema),
         `./${basename(fileName, /\.ts$/.test(fileName) ? '.ts' : '.tsx')}`,
         tsConfig,
         options.ajv,

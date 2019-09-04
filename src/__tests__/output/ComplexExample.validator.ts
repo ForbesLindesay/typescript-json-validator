@@ -138,7 +138,10 @@ export function validateKoaRequest(
         ctx.throw(
           400,
           'Invalid request: ' +
-            ajv.errorsText(validator.errors, {dataVar: prop}) +
+            ajv.errorsText(
+              validator.errors!.filter((e: any) => e.keyword !== 'if'),
+              {dataVar: prop},
+            ) +
             '\n\n' +
             inspect({
               params: ctx.params,
@@ -179,7 +182,10 @@ export function validate(typeName: string): (value: unknown) => any {
         'Invalid ' +
           typeName +
           ': ' +
-          ajv.errorsText(validator.errors, {dataVar: typeName}),
+          ajv.errorsText(
+            validator.errors!.filter((e: any) => e.keyword !== 'if'),
+            {dataVar: typeName},
+          ),
       );
     }
 
