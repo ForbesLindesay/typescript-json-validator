@@ -1,5 +1,5 @@
 import {writeFileSync} from 'fs';
-import {basename} from 'path';
+import {basename, relative, dirname} from 'path';
 import {parseArgs} from './parseArgs';
 import parse from './parse';
 import {
@@ -36,6 +36,13 @@ export default function run(args?: string[]) {
         options.useNamedExport,
         normalizeSchema(schema),
         `./${basename(fileName, /\.ts$/.test(fileName) ? '.ts' : '.tsx')}`,
+        options.customKeywordFnName,
+        options.customKeywordPath
+          ? relative(
+              dirname(outputFileName),
+              options.customKeywordPath,
+            ).replace(/.ts/, '')
+          : '',
         tsConfig,
         options.ajv,
       );
