@@ -50,9 +50,6 @@ export function printSingleTypeValidator(
   tsConfig: any,
   options: Ajv.Options = {},
 ) {
-  if (isNamedExport !== false) {
-    throw new Error('temp');
-  }
   return [
     t.TSLINT_DISABLE,
     t.GENERATED_COMMENT,
