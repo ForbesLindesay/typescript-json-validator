@@ -21,7 +21,7 @@
     "noUnusedParameters": true,
     "declaration": true,
     "lib": ["es2018"],
-    "incremental": true
+    "incremental": false
   },
   "include": ["src"],
   "exclude": ["src/__tests__/build-parameters"]
