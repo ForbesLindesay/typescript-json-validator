@@ -74,11 +74,17 @@ Object {
       "TypeB": Object {
         "properties": Object {
           "id": Object {
-            "type": "number",
+            "type": Array [
+              "null",
+              "number",
+            ],
           },
           "value": Object {
             "format": "date-time",
-            "type": "string",
+            "type": Array [
+              "null",
+              "string",
+            ],
           },
         },
         "required": Array [
@@ -108,14 +114,14 @@ test('ajv', () => {
   const ajv = new Ajv({coerceTypes: false, allErrors: true, useDefaults: true});
   ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
   ajv.addSchema(schema, 'root');
-  const validateMyEnum = ajv.getSchema('root#/definitions/MyEnum');
+  const validateMyEnum = ajv.getSchema('root#/definitions/MyEnum')!;
   expect(validateMyEnum(1)).toBe(true);
   expect(validateMyEnum(10)).toBe(false);
   expect(
     ajv.errorsText(validateMyEnum.errors, {dataVar: 'x'}),
   ).toMatchInlineSnapshot(`"x should be equal to one of the allowed values"`);
 
-  const validateRequestA = ajv.getSchema('root#/definitions/RequestA');
+  const validateRequestA = ajv.getSchema('root#/definitions/RequestA')!;
   expect(
     validateRequestA({query: {id: 'x', value: 'y'}, params: {e: 42}}),
   ).toBe(false);

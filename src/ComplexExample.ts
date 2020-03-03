@@ -10,11 +10,11 @@ export interface TypeA {
 }
 
 export interface TypeB {
-  id: number;
+  id: number | null;
   /**
    * @format date-time
    */
-  value: string;
+  value: string | null;
 }
 
 export interface RequestA {

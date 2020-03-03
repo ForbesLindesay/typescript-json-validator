@@ -25,7 +25,6 @@ export const ExampleTypeSchema = {
       type: 'number',
     },
     email: {
-      format: 'email',
       type: 'string',
     },
     value: {
@@ -37,16 +36,16 @@ export const ExampleTypeSchema = {
 };
 export type ValidateFunction<T> = ((data: unknown) => data is T) &
   Pick<Ajv.ValidateFunction, 'errors'>;
-const rawValidateExampleType = ajv.compile(
-  ExampleTypeSchema,
-) as ValidateFunction<ExampleType>;
+export const isExampleType = ajv.compile(ExampleTypeSchema) as ValidateFunction<
+  ExampleType
+>;
 export default function validate(value: unknown): ExampleType {
-  if (rawValidateExampleType(value)) {
+  if (isExampleType(value)) {
     return value;
   } else {
     throw new Error(
       ajv.errorsText(
-        rawValidateExampleType.errors!.filter((e: any) => e.keyword !== 'if'),
+        isExampleType.errors!.filter((e: any) => e.keyword !== 'if'),
         {dataVar: 'ExampleType'},
       ) +
         '\n\n' +
