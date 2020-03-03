@@ -66,11 +66,11 @@ export const Schema = {
     TypeB: {
       properties: {
         id: {
-          type: 'number',
+          type: ['null', 'number'],
         },
         value: {
           format: 'date-time',
-          type: 'string',
+          type: ['null', 'string'],
         },
       },
       required: ['id', 'value'],

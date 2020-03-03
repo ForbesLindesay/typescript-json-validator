@@ -74,11 +74,17 @@ Object {
       "TypeB": Object {
         "properties": Object {
           "id": Object {
-            "type": "number",
+            "type": Array [
+              "null",
+              "number",
+            ],
           },
           "value": Object {
             "format": "date-time",
-            "type": "string",
+            "type": Array [
+              "null",
+              "string",
+            ],
           },
         },
         "required": Array [
