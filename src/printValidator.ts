@@ -47,6 +47,8 @@ export function printSingleTypeValidator(
   isNamedExport: boolean,
   schema: TJS.Definition,
   relativePath: string,
+  customKeywordFnName: string | undefined,
+  customKeywordPath: string | undefined,
   tsConfig: any,
   options: Ajv.Options = {},
 ) {
@@ -56,7 +58,9 @@ export function printSingleTypeValidator(
     t.IMPORT_INSPECT,
     t.IMPORT_AJV(tsConfig),
     t.importType(typeName, relativePath, {isNamedExport}),
+    t.importCustomKeyword(customKeywordFnName, customKeywordPath),
     t.declareAJV(options),
+    t.applyCustomKeyword(customKeywordFnName),
     t.exportNamed([typeName]),
     t.declareSchema(typeName + 'Schema', schema),
     // TODO: koa implementation

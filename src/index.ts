@@ -20,11 +20,7 @@ export {
 export default function run(args?: string[]) {
   const {files, options} = parseArgs(args);
   const tsConfig = loadTsConfig();
-  const parsed = parse(
-    files.map(f => f.fileName),
-    tsConfig,
-    options.schema,
-  );
+  const parsed = parse(files.map(f => f.fileName), tsConfig, options.schema);
 
   files.forEach(({fileName, typeName}) => {
     const outputFileName = fileName.replace(/\.tsx?$/, '.validator.ts');
@@ -36,6 +32,8 @@ export default function run(args?: string[]) {
         options.useNamedExport,
         normalizeSchema(schema),
         `./${basename(fileName, /\.ts$/.test(fileName) ? '.ts' : '.tsx')}`,
+        options.customKeywordFnName,
+        options.customKeywordPath,
         tsConfig,
         options.ajv,
       );

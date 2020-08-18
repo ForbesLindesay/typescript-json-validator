@@ -13,6 +13,8 @@ export interface Options {
   >;
   ajv: Ajv.Options;
   useNamedExport: boolean;
+  customKeywordFnName: string | undefined;
+  customKeywordPath: string | undefined;
 }
 export interface File {
   fileName: string;
@@ -146,6 +148,18 @@ export function parseArgs(args?: string[]): ParsedArgs {
       'useNamedExport',
       'Type name is a named export, rather than the default export of the file',
     )
+    .string('customKeywordFnName')
+    .default('customKeywordFnName', undefined)
+    .describe(
+      'customKeywordFnName',
+      'Name of function which configures AJV custom keywords',
+    )
+    .string('customKeywordPath')
+    .default('customKeywordPath', undefined)
+    .describe(
+      'customKeywordPath',
+      'Path to file containing customKeywordFnName',
+    )
     .parse(args);
 
   const isCollection: boolean = parsedArgs.collection;
@@ -193,6 +207,8 @@ export function parseArgs(args?: string[]): ParsedArgs {
         useDefaults: parsedArgs.defaultProps,
       },
       useNamedExport: parsedArgs.useNamedExport,
+      customKeywordFnName: parsedArgs.customKeywordFnName,
+      customKeywordPath: parsedArgs.customKeywordPath,
     },
   };
 }
