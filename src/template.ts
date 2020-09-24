@@ -160,3 +160,11 @@ export const VALIDATE_IMPLEMENTATION = `export function validate(typeName: strin
     return value as any;
   };
 }`;
+
+export const importCustomKeyword = (
+  fnName: string | undefined,
+  path: string | undefined,
+) => (fnName && path ? `import {${fnName}} from '${path}';` : '');
+
+export const applyCustomKeyword = (fnName: string | undefined) =>
+  fnName ? `${fnName}(ajv);` : '';

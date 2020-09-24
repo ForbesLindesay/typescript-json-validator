@@ -36,6 +36,8 @@ export default function run(args?: string[]) {
         options.useNamedExport,
         normalizeSchema(schema),
         `./${basename(fileName, /\.ts$/.test(fileName) ? '.ts' : '.tsx')}`,
+        options.customKeywordFnName,
+        options.customKeywordPath,
         tsConfig,
         options.ajv,
       );
