@@ -27,3 +27,4 @@ environment.toml
 .env
 
 src/__tests__/**/*.validator.ts
+.vscode/

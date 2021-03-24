@@ -8,20 +8,21 @@ import {
   Entity,
   Value,
 } from './DisjointUnionExample';
+undefined;
 export const ajv = new Ajv({
   allErrors: true,
   coerceTypes: false,
   format: 'fast',
   nullable: true,
+  removeAdditional: false,
   unicode: true,
   uniqueItems: true,
   useDefaults: true,
 });
-
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
 
 export {EntityTypes, EntityOne, EntityTwo, Entity, Value};
-export const Schema = {
+export const Schema: object = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   definitions: {
     Entity: {
@@ -205,6 +206,13 @@ export const Schema = {
   },
 };
 ajv.addSchema(Schema, 'Schema');
+export type AllowedTypeNames =
+  | 'EntityTypes'
+  | 'EntityOne'
+  | 'EntityTwo'
+  | 'Entity'
+  | 'Value';
+export type AllowedTypes = EntityTypes | EntityOne | EntityTwo | Entity | Value;
 export function validate(
   typeName: 'EntityTypes',
 ): (value: unknown) => EntityTypes;
@@ -212,6 +220,7 @@ export function validate(typeName: 'EntityOne'): (value: unknown) => EntityOne;
 export function validate(typeName: 'EntityTwo'): (value: unknown) => EntityTwo;
 export function validate(typeName: 'Entity'): (value: unknown) => Entity;
 export function validate(typeName: 'Value'): (value: unknown) => Value;
+export function validate(typeName: AllowedTypeNames): (value: unknown) => any;
 export function validate(typeName: string): (value: unknown) => any {
   const validator: any = ajv.getSchema(`Schema#/definitions/${typeName}`);
   return (value: unknown): any => {

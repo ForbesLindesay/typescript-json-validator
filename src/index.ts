@@ -27,7 +27,9 @@ export default function run(args?: string[]) {
   );
 
   files.forEach(({fileName, typeName}) => {
-    const outputFileName = fileName.replace(/\.tsx?$/, '.validator.ts');
+    const outputFileName = options.output
+      ? options.output
+      : fileName.replace(/\.tsx?$/, '.validator.ts');
     let validator: string;
     if (typeName) {
       const schema = parsed.getType(typeName);

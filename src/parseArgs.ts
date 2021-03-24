@@ -13,6 +13,7 @@ export interface Options {
   >;
   ajv: Ajv.Options;
   useNamedExport: boolean;
+  output?: string;
 }
 export interface File {
   fileName: string;
@@ -146,6 +147,14 @@ export function parseArgs(args?: string[]): ParsedArgs {
       'useNamedExport',
       'Type name is a named export, rather than the default export of the file',
     )
+    .boolean('generatePermissive')
+    .default('generatePermissive', false)
+    .describe(
+      'generatePermissive',
+      'If --noExtraProps is true then generate validators that clean the object',
+    )
+    .string('output')
+    .describe('output', 'overrides filename')
     .parse(args);
 
   const isCollection: boolean = parsedArgs.collection;
@@ -191,8 +200,11 @@ export function parseArgs(args?: string[]): ParsedArgs {
         unicode: parsedArgs.unicode,
         uniqueItems: parsedArgs.uniqueItems,
         useDefaults: parsedArgs.defaultProps,
+        removeAdditional:
+          parsedArgs.noExtraProps && parsedArgs.generatePermissive,
       },
       useNamedExport: parsedArgs.useNamedExport,
+      output: parsedArgs.output,
     },
   };
 }
