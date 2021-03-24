@@ -4,191 +4,193 @@ import Ajv = require('ajv');
 import {MyEnum, TypeA, TypeB, RequestA, RequestB} from '../../ComplexExample';
 import {inspect} from 'util';
 export interface KoaContext {
-  readonly request?: unknown; // {body?: unknown}
-  readonly params?: unknown;
-  readonly query?: unknown;
-  throw(status: 400, message: string): unknown;
+    readonly request?: unknown; // {body?: unknown}
+    readonly params?: unknown;
+    readonly query?: unknown;
+    throw(status: 400, message: string): unknown;
 }
-export const ajv = new Ajv({allErrors: true, coerceTypes: false});
-
+undefined;
+export const ajv = new Ajv({
+    allErrors: true,
+    coerceTypes: false,
+    removeAdditional: false,
+});
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
 
 export {MyEnum, TypeA, TypeB, RequestA, RequestB};
 export const Schema = {
-  $schema: 'http://json-schema.org/draft-07/schema#',
-  definitions: {
-    MyEnum: {
-      enum: [0, 1, 2],
-      type: 'number',
-    },
-    RequestA: {
-      properties: {
-        body: {
-          $ref: '#/definitions/TypeB',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    definitions: {
+        MyEnum: {
+            enum: [0, 1, 2],
+            type: 'number',
         },
-        params: {
-          properties: {
-            e: {
-              $ref: '#/definitions/MyEnum',
+        RequestA: {
+            properties: {
+                body: {
+                    $ref: '#/definitions/TypeB',
+                },
+                params: {
+                    properties: {
+                        e: {
+                            $ref: '#/definitions/MyEnum',
+                        },
+                    },
+                    required: ['e'],
+                    type: 'object',
+                },
+                query: {
+                    $ref: '#/definitions/TypeA',
+                },
             },
-          },
-          required: ['e'],
-          type: 'object',
+            required: ['body', 'params', 'query'],
+            type: 'object',
         },
-        query: {
-          $ref: '#/definitions/TypeA',
+        RequestB: {
+            properties: {
+                query: {
+                    $ref: '#/definitions/TypeA',
+                },
+            },
+            required: ['query'],
+            type: 'object',
         },
-      },
-      required: ['body', 'params', 'query'],
-      type: 'object',
+        TypeA: {
+            properties: {
+                id: {
+                    type: 'number',
+                },
+                value: {
+                    type: 'string',
+                },
+            },
+            required: ['id', 'value'],
+            type: 'object',
+        },
+        TypeB: {
+            properties: {
+                id: {
+                    type: ['null', 'number'],
+                },
+                value: {
+                    format: 'date-time',
+                    type: ['null', 'string'],
+                },
+            },
+            required: ['id', 'value'],
+            type: 'object',
+        },
     },
-    RequestB: {
-      properties: {
-        query: {
-          $ref: '#/definitions/TypeA',
-        },
-      },
-      required: ['query'],
-      type: 'object',
-    },
-    TypeA: {
-      properties: {
-        id: {
-          type: 'number',
-        },
-        value: {
-          type: 'string',
-        },
-      },
-      required: ['id', 'value'],
-      type: 'object',
-    },
-    TypeB: {
-      properties: {
-        id: {
-          type: ['null', 'number'],
-        },
-        value: {
-          format: 'date-time',
-          type: ['null', 'string'],
-        },
-      },
-      required: ['id', 'value'],
-      type: 'object',
-    },
-  },
 };
 ajv.addSchema(Schema, 'Schema');
-export function validateKoaRequest(
-  typeName: 'RequestA',
-): (
-  ctx: KoaContext,
-) => {
-  params: RequestA['params'];
-  query: RequestA['query'];
-  body: RequestA['body'];
+export function validateKoaRequest(typeName: 'RequestA'): (ctx: KoaContext) => {
+    params: RequestA['params'];
+    query: RequestA['query'];
+    body: RequestA['body'];
 };
-export function validateKoaRequest(
-  typeName: 'RequestB',
-): (
-  ctx: KoaContext,
-) => {
-  params: unknown;
-  query: RequestB['query'];
-  body: unknown;
+export function validateKoaRequest(typeName: 'RequestB'): (ctx: KoaContext) => {
+    params: unknown;
+    query: RequestB['query'];
+    body: unknown;
 };
-export function validateKoaRequest(
-  typeName: string,
-): (
-  ctx: KoaContext,
-) => {
-  params: unknown;
-  query: unknown;
-  body: unknown;
+export function validateKoaRequest(typeName: string): (ctx: KoaContext) => {
+    params: unknown;
+    query: unknown;
+    body: unknown;
 };
-export function validateKoaRequest(
-  typeName: string,
-): (
-  ctx: KoaContext,
-) => {
-  params: any;
-  query: any;
-  body: any;
+export function validateKoaRequest(typeName: string): (ctx: KoaContext) => {
+    params: any;
+    query: any;
+    body: any;
 } {
-  const params = ajv.getSchema(
-    `Schema#/definitions/${typeName}/properties/params`,
-  );
-  const query = ajv.getSchema(
-    `Schema#/definitions/${typeName}/properties/query`,
-  );
-  const body = ajv.getSchema(`Schema#/definitions/${typeName}/properties/body`);
-  const validateProperty = (
-    prop: string,
-    validator: any,
-    ctx: KoaContext,
-  ): any => {
-    const data =
-      prop === 'body'
-        ? ctx.request && (ctx.request as any).body
-        : (ctx as any)[prop];
-    if (validator) {
-      const valid = validator(data);
+    const params = ajv.getSchema(
+        `Schema#/definitions/${typeName}/properties/params`,
+    );
+    const query = ajv.getSchema(
+        `Schema#/definitions/${typeName}/properties/query`,
+    );
+    const body = ajv.getSchema(
+        `Schema#/definitions/${typeName}/properties/body`,
+    );
+    const validateProperty = (
+        prop: string,
+        validator: any,
+        ctx: KoaContext,
+    ): any => {
+        const data =
+            prop === 'body'
+                ? ctx.request && (ctx.request as any).body
+                : (ctx as any)[prop];
+        if (validator) {
+            const valid = validator(data);
 
-      if (!valid) {
-        ctx.throw(
-          400,
-          'Invalid request: ' +
-            ajv.errorsText(
-              validator.errors!.filter((e: any) => e.keyword !== 'if'),
-              {dataVar: prop},
-            ) +
-            '\n\n' +
-            inspect({
-              params: ctx.params,
-              query: ctx.query,
-              body: ctx.request && (ctx.request as any).body,
-            }),
-        );
-      }
-    }
-    return data;
-  };
-  return ctx => {
-    return {
-      params: validateProperty('params', params, ctx),
-      query: validateProperty('query', query, ctx),
-      body: validateProperty('body', body, ctx),
+            if (!valid) {
+                ctx.throw(
+                    400,
+                    'Invalid request: ' +
+                        ajv.errorsText(
+                            validator.errors!.filter(
+                                (e: any) => e.keyword !== 'if',
+                            ),
+                            {dataVar: prop},
+                        ) +
+                        '\n\n' +
+                        inspect({
+                            params: ctx.params,
+                            query: ctx.query,
+                            body: ctx.request && (ctx.request as any).body,
+                        }),
+                );
+            }
+        }
+        return data;
     };
-  };
+    return (ctx) => {
+        return {
+            params: validateProperty('params', params, ctx),
+            query: validateProperty('query', query, ctx),
+            body: validateProperty('body', body, ctx),
+        };
+    };
 }
+export type AllowedTypeNames =
+    | 'MyEnum'
+    | 'TypeA'
+    | 'TypeB'
+    | 'RequestA'
+    | 'RequestB';
+export type AllowedTypes = MyEnum | TypeA | TypeB | RequestA | RequestB;
 export function validate(typeName: 'MyEnum'): (value: unknown) => MyEnum;
 export function validate(typeName: 'TypeA'): (value: unknown) => TypeA;
 export function validate(typeName: 'TypeB'): (value: unknown) => TypeB;
 export function validate(typeName: 'RequestA'): (value: unknown) => RequestA;
 export function validate(typeName: 'RequestB'): (value: unknown) => RequestB;
+export function validate(typeName: AllowedTypeNames): (value: unknown) => any;
 export function validate(typeName: string): (value: unknown) => any {
-  const validator: any = ajv.getSchema(`Schema#/definitions/${typeName}`);
-  return (value: unknown): any => {
-    if (!validator) {
-      throw new Error(
-        `No validator defined for Schema#/definitions/${typeName}`,
-      );
-    }
+    const validator: any = ajv.getSchema(`Schema#/definitions/${typeName}`);
+    return (value: unknown): any => {
+        if (!validator) {
+            throw new Error(
+                `No validator defined for Schema#/definitions/${typeName}`,
+            );
+        }
 
-    const valid = validator(value);
+        const valid = validator(value);
 
-    if (!valid) {
-      throw new Error(
-        'Invalid ' +
-          typeName +
-          ': ' +
-          ajv.errorsText(
-            validator.errors!.filter((e: any) => e.keyword !== 'if'),
-            {dataVar: typeName},
-          ),
-      );
-    }
+        if (!valid) {
+            throw new Error(
+                'Invalid ' +
+                    typeName +
+                    ': ' +
+                    ajv.errorsText(
+                        validator.errors!.filter(
+                            (e: any) => e.keyword !== 'if',
+                        ),
+                        {dataVar: typeName},
+                    ),
+            );
+        }
 
-    return value as any;
-  };
+        return value as any;
+    };
 }

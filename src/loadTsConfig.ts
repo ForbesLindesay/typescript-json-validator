@@ -1,8 +1,8 @@
-import loadTsconfig from 'tsconfig-loader';
+import loadTsconfig, {Tsconfig} from 'tsconfig-loader';
 
-export default function loadTsConfig(cwd: string = process.cwd()) {
+export default function loadTsConfig(cwd: string = process.cwd()): Tsconfig {
   const result = loadTsconfig({cwd});
-  const compilerOptions = result?.tsConfig.compilerOptions || {};
+  const compilerOptions: Tsconfig = result?.tsConfig.compilerOptions ?? {};
   if (
     compilerOptions.experimentalDecorators === false &&
     compilerOptions.emitDecoratorMetadata === undefined

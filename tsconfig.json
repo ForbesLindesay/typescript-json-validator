@@ -21,8 +21,9 @@
     "noUnusedParameters": true,
     "declaration": true,
     "lib": ["es2018"],
-    "incremental": false
+    "incremental": false,
+    "resolveJsonModule": true
   },
   "include": ["src"],
-  "exclude": ["src/__tests__/build-parameters"]
+  "exclude": ["src/__tests__/"]
 }

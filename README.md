@@ -8,15 +8,15 @@ Define a type in `src/Example.ts`, e.g.:
 
 ```ts
 export default interface ExampleType {
-  value: string;
-  /**
-   * @TJS-format email
-   */
-  email?: string;
-  /**
-   * @default 42
-   */
-  answer: number;
+    value: string;
+    /**
+     * @TJS-format email
+     */
+    email?: string;
+    /**
+     * @default 42
+     */
+    answer: number;
 }
 ```
 
@@ -105,6 +105,9 @@ Options:
                         one single type.              [boolean] [default: false]
   --useNamedExport      Type name is a named export, rather than the default
                         export of the file            [boolean] [default: false]
+  --output              overrides filename                              [string]
+  --separateSchemaFile  save json schema to a separate .json file
+                                                      [boolean] [default: false]
   -*                                                               [default: []]
 
 ```
