@@ -9,12 +9,16 @@ export interface KoaContext {
   readonly query?: unknown;
   throw(status: 400, message: string): unknown;
 }
-export const ajv = new Ajv({allErrors: true, coerceTypes: false});
-
+undefined;
+export const ajv = new Ajv({
+  allErrors: true,
+  coerceTypes: false,
+  removeAdditional: false,
+});
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
 
 export {MyEnum, TypeA, TypeB, RequestA, RequestB};
-export const Schema = {
+export const Schema: object = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   definitions: {
     MyEnum: {
@@ -161,11 +165,19 @@ export function validateKoaRequest(
     };
   };
 }
+export type AllowedTypeNames =
+  | 'MyEnum'
+  | 'TypeA'
+  | 'TypeB'
+  | 'RequestA'
+  | 'RequestB';
+export type AllowedTypes = MyEnum | TypeA | TypeB | RequestA | RequestB;
 export function validate(typeName: 'MyEnum'): (value: unknown) => MyEnum;
 export function validate(typeName: 'TypeA'): (value: unknown) => TypeA;
 export function validate(typeName: 'TypeB'): (value: unknown) => TypeB;
 export function validate(typeName: 'RequestA'): (value: unknown) => RequestA;
 export function validate(typeName: 'RequestB'): (value: unknown) => RequestB;
+export function validate(typeName: AllowedTypeNames): (value: unknown) => any;
 export function validate(typeName: string): (value: unknown) => any {
   const validator: any = ajv.getSchema(`Schema#/definitions/${typeName}`);
   return (value: unknown): any => {

@@ -35,36 +35,76 @@ export const importType = (
     ? importNamedTypes([name], relativePath)
     : importDefaultType(name, relativePath);
 
-export const declareAJV = (options: Ajv.Options) =>
-  `export const ajv = new Ajv(${stringify({
-    coerceTypes: false,
-    allErrors: true,
-    ...options,
-  })});
+export const declareAJV = (options: Ajv.Options): string => {
+  const declareTag = (
+    variable: string,
+    opts: string,
+  ) => `export const ${variable} = new Ajv(${opts});
+  ${variable}.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));`;
 
-ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
-`;
+  let out;
+  if (options.removeAdditional) {
+    out = declareTag(
+      'cleanerAjv',
+      stringify({
+        coerceTypes: false,
+        allErrors: true,
+        ...options,
+      }),
+    );
+  }
+  const exactOptions: Ajv.Options = {...options, removeAdditional: false};
+
+  return `${out}
+  ${declareTag(
+    'ajv',
+    stringify({
+      coerceTypes: false,
+      allErrors: true,
+      ...exactOptions,
+    }),
+  )}
+  `;
+};
 
 export const exportNamed = (names: string[]) => `export {${names.join(', ')}};`;
 
 export const declareSchema = (name: string, schema: TJS.Definition) =>
-  `export const ${name} = ${stringify(schema, {space: 2})};`;
+  `export const ${name}: object = ${stringify(schema, {space: 2})};`;
 
-export const addSchema = (name: string) => `ajv.addSchema(${name}, '${name}')`;
+export const addSchema = (name: string, options: Ajv.Options) =>
+  options.removeAdditional
+    ? `cleanerAjv.addSchema(${name}, '${name}'); ajv.addSchema(${name}, '${name}')`
+    : `ajv.addSchema(${name}, '${name}')`;
 
 export const DECLARE_VALIDATE_TYPE = `export type ValidateFunction<T> = ((data: unknown) => data is T) & Pick<Ajv.ValidateFunction, 'errors'>`;
 export const validateType = (typeName: string) =>
   `ValidateFunction<${typeName}>`;
 
-export const compileSchema = (schemaName: string, typeName: string) =>
-  `ajv.compile(${schemaName}) as ${validateType(typeName)}`;
+export const compileSchema = (
+  schemaName: string,
+  typeName: string,
+  variable: string,
+) => `${variable}.compile(${schemaName}) as ${validateType(typeName)}`;
 
 export const validateFn = (
   typeName: string,
   schemaName: string,
-) => `export const is${typeName} = ${compileSchema(schemaName, typeName)};
-export default function validate(value: unknown): ${typeName} {
-  if (is${typeName}(value)) {
+  options: Ajv.Options,
+) => {
+  const gen = (
+    name: string,
+    variable: string,
+    isdefault: boolean,
+    isPermissive: boolean,
+  ) =>
+    `export const is${typeName}${
+      isPermissive ? 'Permissive' : ''
+    } = ${compileSchema(schemaName, typeName, variable)};
+export ${
+      isdefault ? 'default' : ''
+    } function ${name}(value: unknown): ${typeName} {
+  if (is${typeName}${isPermissive ? 'Permissive' : ''}(value)) {
     return value;
   } else {
     throw new Error(
@@ -73,8 +113,15 @@ export default function validate(value: unknown): ${typeName} {
       inspect(value),
     );
   }
-}
+};
 `;
+
+  return `${
+    options.removeAdditional
+      ? gen('cleanAndValidate', 'cleanerAjv', false, true)
+      : ''
+  } ${gen('validate', 'ajv', true, false)}`;
+};
 
 function typeOf(typeName: string, property: string, schema: TJS.Definition) {
   if (schema.definitions && schema.definitions[typeName]) {
@@ -140,10 +187,43 @@ export const VALIDATE_KOA_REQUEST_IMPLEMENTATION = `export function validateKoaR
   };
 }`;
 
-export const validateOverload = (typeName: string) =>
-  `export function validate(typeName: '${typeName}'): (value: unknown) => ${typeName};`;
+export const validateOverload = (
+  typeName: string,
+  returnType: string = typeName,
+  quotes: boolean = true,
+) =>
+  `export function validate(typeName: ${
+    quotes ? `'${typeName}'` : typeName
+  }): (value: unknown) => ${returnType};`;
+export const cleanAndValidateOverload = (
+  typeName: string,
+  returnType: string = typeName,
+  quotes: boolean = true,
+) =>
+  `export function cleanAndValidate(typeName: ${
+    quotes ? `'${typeName}'` : typeName
+  }): (value: unknown) => ${returnType};`;
 export const VALIDATE_IMPLEMENTATION = `export function validate(typeName: string): (value: unknown) => any {
   const validator: any = ajv.getSchema(\`Schema#/definitions/\${typeName}\`);
+  return (value: unknown): any => {
+    if (!validator) {
+      throw new Error(\`No validator defined for Schema#/definitions/\${typeName}\`)
+    }
+  
+    const valid = validator(value);
+
+    if (!valid) {
+      throw new Error(
+        'Invalid ' + typeName + ': ' + ajv.errorsText(validator.errors!.filter((e: any) => e.keyword !== 'if'), {dataVar: typeName}),
+      );
+    }
+
+    return value as any;
+  };
+}`;
+
+export const VALIDATE_IMPLEMENTATION_CLEANER = `export function cleanAndValidate(typeName: string): (value: unknown) => any {
+  const validator: any = cleanerAjv.getSchema(\`Schema#/definitions/\${typeName}\`);
   return (value: unknown): any => {
     if (!validator) {
       throw new Error(\`No validator defined for Schema#/definitions/\${typeName}\`)
