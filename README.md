@@ -34,7 +34,7 @@ import validate from './Example.validator.ts';
 
 const value: unknown = JSON.parse(readFileSync(process.argv[2], 'utf8'));
 
-// this will through a clear error if `value` is not of the
+// this will throw a clear error if `value` is not of the
 // correct type. It will also fill in any default values
 const validatedValue = validate(value);
 
