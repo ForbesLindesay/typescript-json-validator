@@ -1,206 +1,157 @@
-import { posix } from 'path';
-import { sync as globSync } from 'glob';
-import { getDefaultArgs, Args as TypeScriptJsonSchemaArgs } from 'typescript-json-schema';
-import * as Ajv from 'ajv';
+import {posix as path} from 'path';
+import {sync as globSync} from 'glob';
+import * as tjs from 'ts-json-schema-generator';
+import Ajv from 'ajv';
+import yargs from 'yargs';
+
+const {basename} = path;
 
 export interface Options {
-	schema: Pick<TypeScriptJsonSchemaArgs, Exclude<keyof TypeScriptJsonSchemaArgs, 'out'>>;
-	ajv: Ajv.Options;
-	useNamedExport: boolean;
-	separateSchemaFile: boolean;
-	filename: string;
-	output: string;
-	isCollection: boolean;
-	formatMode: 'fast' | 'full';
+  schema: Required<Omit<tjs.Config, 'path' | 'type' | 'tsconfig'>>;
+  ajv: Ajv.Options;
 }
 export interface File {
 	fileName: string;
 	typeName?: string;
 }
 export interface ParsedArgs {
-	files: File[];
-	options: Options;
+  files: File[];
+  glob: string;
+  output: string | undefined;
+  options: Options;
 }
-export function parseArgs(args?: string[]): ParsedArgs {
-	var helpText = 'Usage: typescript-json-schema <path-to-typescript-file> <type>';
-	const defaultArgs = getDefaultArgs();
-	const parsedArgs = require('yargs')
-		.usage(helpText)
-		.demand(1)
+export function parseArgs(args?: ReadonlyArray<string>): ParsedArgs {
+  var helpText =
+    'Usage: typescript-json-schema <path-to-typescript-file> <type>';
+  const defaultArgs: Required<
+    Omit<tjs.Config, 'path' | 'type' | 'tsconfig'>
+  > = {
+    topRef: false,
+    expose: 'export',
+    jsDoc: 'extended',
+    sortProps: true,
+    strictTuples: false,
+    skipTypeCheck: false,
+    encodeRefs: true,
+    minify: false,
+    extraTags: [],
+    additionalProperties: false,
+    schemaId: '',
+  };
+  const yargsDefs = yargs
+    .usage(helpText)
+    .demand(1)
 
-		// typescript-json-schema options
+    // 'ts-json-schema-generator'
 
-		.boolean('refs')
-		.default('refs', defaultArgs.ref)
-		.describe('refs', 'Create shared ref definitions.')
-		.boolean('aliasRefs')
-		.default('aliasRefs', defaultArgs.aliasRef)
-		.describe('aliasRefs', 'Create shared ref definitions for the type aliases.')
-		.boolean('topRef')
-		.default('topRef', defaultArgs.topRef)
-		.describe('topRef', 'Create a top-level ref definition.')
-		.boolean('titles')
-		.default('titles', defaultArgs.titles)
-		.describe('titles', 'Creates titles in the output schema.')
-		.boolean('defaultProps')
-		.default('defaultProps', true)
-		.describe('defaultProps', 'Create default properties definitions.')
-		.boolean('noExtraProps')
-		.default('noExtraProps', defaultArgs.noExtraProps)
-		.describe('noExtraProps', 'Disable additional properties in objects by default.')
-		.boolean('propOrder')
-		.default('propOrder', defaultArgs.propOrder)
-		.describe('propOrder', 'Create property order definitions.')
-		.boolean('typeOfKeyword')
-		.default('typeOfKeyword', defaultArgs.typeOfKeyword)
-		.describe('typeOfKeyword', 'Use typeOf keyword (https://goo.gl/DC6sni) for functions.')
-		.boolean('required')
-		.default('required', true)
-		.describe('required', 'Create required array for non-optional properties.')
-		.boolean('strictNullChecks')
-		.default('strictNullChecks', true)
-		.describe('strictNullChecks', 'Make values non-nullable by default.')
-		.boolean('ignoreErrors')
-		.default('ignoreErrors', defaultArgs.ignoreErrors)
-		.describe('ignoreErrors', 'Generate even if the program has errors.')
-		.array('validationKeywords')
-		.default('validationKeywords', defaultArgs.validationKeywords)
-		.describe('validationKeywords', 'Provide additional validation keywords to include.')
-		.boolean('excludePrivate')
-		.default('excludePrivate', defaultArgs.excludePrivate)
-		.describe('excludePrivate', 'Exclude private members from the schema.')
-		.boolean('uniqueNames')
-		.default('uniqueNames', defaultArgs.uniqueNames)
-		.describe('uniqueNames', 'Use unique names for type symbols.')
-		.array('include')
-		.default('*', defaultArgs.include)
-		.describe('include', 'Further limit tsconfig to include only matching files.')
-		.boolean('rejectDateType')
-		.default('rejectDateType', defaultArgs.rejectDateType)
-		.describe('rejectDateType', 'Rejects Date fields in type definitions.')
-		.string('id')
-		.default('id', defaultArgs.id)
-		.describe('id', 'ID of schema.')
+    .boolean('refs')
+    .default('refs', defaultArgs.encodeRefs)
+    .describe('refs', 'Create shared ref definitions.')
 
-		// ajv options
+    .boolean('topRef')
+    .default('topRef', defaultArgs.topRef)
+    .describe('topRef', 'Create a top-level ref definition.')
 
-		.choices('format', ['fast', 'full'])
-		.default('format', 'fast')
-		.describe(
-			'format',
-			"formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or false not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.",
-		)
-		.boolean('coerceTypes')
-		.default('coerceTypes', false)
-		.describe('coerceTypes', 'Change data type of data to match type keyword. e.g. parse numbers in strings')
+    .boolean('noExtraProps')
+    .default('noExtraProps', !defaultArgs.additionalProperties)
+    .describe(
+      'noExtraProps',
+      'Disable additional properties in objects by default.',
+    )
+    .boolean('propOrder')
+    .default('propOrder', defaultArgs.sortProps)
+    .describe('propOrder', 'Create property order definitions.')
 
-		.choices('strictAll', ['log', true, false])
-		.default('strictAll', false)
-		.describe('strictAll', 'Value for all ajv strict options, unless overriden by other options (https://bit.ly/3flXX6z)')
+    .boolean('strictNullChecks')
+    // default to strict null checks
+    .default('strictNullChecks', !defaultArgs.skipTypeCheck)
+    .describe('strictNullChecks', 'Make values non-nullable by default.')
+    .string('id')
+    .default('id', defaultArgs.schemaId)
+    .describe('id', 'ID of schema.')
 
-		.choices('strict', ['log', true, false])
-		.describe('strict', 'Value for all ajv strict options, unless overriden by other options (https://bit.ly/3flXX6z)')
+    // ajv options
 
-		.choices('strictSchema', ['log', true, false])
-		.describe('strictSchema', 'Prevent unknown keywords,  (https://bit.ly/3flXX6z)')
+    .boolean('uniqueItems')
+    .default('uniqueItems', true)
+    .describe('uniqueItems', 'Validate `uniqueItems` keyword')
+    .boolean('unicode')
+    .default('unicode', true)
+    .describe(
+      'unicode',
+      'calculate correct length of strings with unicode pairs (true by default). Pass false to use .length of strings that is faster, but gives "incorrect" lengths of strings with unicode pairs - each unicode pair is counted as two characters.',
+    )
+    .boolean('nullable')
+    .default('nullable', true)
+    .describe(
+      'nullable',
+      'support keyword "nullable" from Open API 3 specification.',
+    )
+    .choices('format', ['fast', 'full'])
+    .default('format', 'fast')
+    .describe(
+      'format',
+      "formats validation mode ('fast' by default). Pass 'full' for more correct and slow validation or false not to validate formats at all. E.g., 25:00:00 and 2015/14/33 will be invalid time and date in 'full' mode but it will be valid in 'fast' mode.",
+    )
+    .boolean('coerceTypes')
+    .default('coerceTypes', false)
+    .describe(
+      'coerceTypes',
+      'Change data type of data to match type keyword. e.g. parse numbers in strings',
+    )
 
-		.choices('strictNumbers', ['log', true, false])
-		.describe('strictNumbers', 'Whether to accept NaN and Infinity as number types during validation,  (https://bit.ly/3flXX6z)')
+    // specific to typescript-json-validator
 
-		.choices('strictTypes', ['log', true, false])
-		.describe('strictTypes', 'Imposes additional restrictions on how type keyword is used,  (https://bit.ly/3rfsetf)')
+    .boolean('collection')
+    .default('collection', false)
+    .describe(
+      'collection',
+      'Process the file as a collection of types, instead of one single type.',
+    )
+    .string('out')
+    .describe('out', 'name of output, optional')
+    .alias('out', 'o');
 
-		.choices('strictTuples', ['log', true, false])
-		.describe('strictTuples', 'https://bit.ly/3FruEKe')
+  const parsedArgs = args ? yargsDefs.parseSync(args) : yargsDefs.parseSync();
+  const _parsedArgs = parsedArgs._;
+  const isCollection: boolean = parsedArgs.collection;
+  const files: File[] = [];
+  globSync(_parsedArgs[0] as string)
+    .filter((filename) => {
+      return !/\.validator\.tsx?$/.test(filename);
+    })
+    .forEach((fileName) => {
+      if (isCollection) {
+        files.push({fileName});
+      } else {
+        const typeName =
+          (_parsedArgs[1] as string) || basename(fileName, '.ts');
+        files.push({fileName, typeName});
+      }
+    });
 
-		.choices('strictRequired', ['log', true, false])
-		.describe(
-			'strictRequired',
-			'Logs warning or throws exception if the property used in "required" keyword is not defined in "properties" keyword in the same or some parent schema relating to the same object ( (https://bit.ly/3rd5Bpf)',
-		)
-
-		// specific to typescript-json-validator
-
-		.boolean('collection')
-		.default('collection', false)
-		.describe('collection', 'Process the file as a collection of types, instead of one single type.')
-		.boolean('useNamedExport')
-		.default('useNamedExport', false)
-		.describe('useNamedExport', 'Type name is a named export, rather than the default export of the file')
-		.string('output')
-		.describe('output', 'overrides filename')
-		.boolean('separateSchemaFile')
-		.default('separateSchemaFile', false)
-		.describe('separateSchemaFile', 'save json schema to a separate .json file')
-		.string('output')
-		.describe('output', 'overrides filename')
-		.parse(args);
-
-	const isCollection: boolean = parsedArgs.collection;
-	const files: File[] = [];
-
-	globSync(parsedArgs._[0])
-		.filter((filename) => !/\.validator\.tsx?$/.test(filename))
-		.forEach((fileName) => {
-			if (isCollection) {
-				files.push({ fileName });
-			} else {
-				const typeName = parsedArgs._[1] || posix.basename(fileName, '.ts');
-				files.push({ fileName, typeName });
-			}
-		});
-
-	const [strict, strictTypes, strictSchema, strictRequired, strictTuples, strictNumbers] = [
-		parsedArgs.strict ?? parsedArgs.strictAll,
-		parsedArgs.strictTypes ?? parsedArgs.strictAll,
-		parsedArgs.strictSchema ?? parsedArgs.strictAll,
-		parsedArgs.strictRequired ?? parsedArgs.strictAll,
-		parsedArgs.strictTuples ?? parsedArgs.strictAll,
-		parsedArgs.strictNumbers ?? parsedArgs.strictAll,
-	];
-
-	return {
-		files,
-		options: {
-			schema: {
-				ref: parsedArgs.refs,
-				aliasRef: parsedArgs.aliasRefs,
-				topRef: parsedArgs.topRef,
-				titles: parsedArgs.titles,
-				defaultProps: parsedArgs.defaultProps,
-				noExtraProps: parsedArgs.noExtraProps,
-				propOrder: parsedArgs.propOrder,
-				typeOfKeyword: parsedArgs.useTypeOfKeyword,
-				required: parsedArgs.required,
-				strictNullChecks: parsedArgs.strictNullChecks,
-				ignoreErrors: parsedArgs.ignoreErrors,
-				validationKeywords: parsedArgs.validationKeywords,
-				include: parsedArgs.include,
-				excludePrivate: parsedArgs.excludePrivate,
-				uniqueNames: parsedArgs.uniqueNames,
-				rejectDateType: parsedArgs.rejectDateType,
-				id: parsedArgs.id,
-				esModuleInterop: true,
-				defaultNumberType: 'number',
-				tsNodeRegister: true,
-			},
-			ajv: {
-				coerceTypes: parsedArgs.coerceTypes,
-				useDefaults: parsedArgs.defaultProps,
-				removeAdditional: parsedArgs.noExtraProps && parsedArgs.generatePermissive,
-				strict,
-				strictTypes,
-				strictSchema,
-				strictRequired,
-				strictTuples,
-				strictNumbers,
-			},
-			useNamedExport: parsedArgs.useNamedExport,
-			formatMode: parsedArgs.format,
-			separateSchemaFile: parsedArgs.separateSchemaFile,
-			isCollection,
-			output: parsedArgs.output,
-			filename: parsedArgs.output ? parsedArgs.output.replace(/\.tsx?$/, '') : '',
-		},
-	};
+  return {
+    files,
+    output: parsedArgs.out,
+    glob: _parsedArgs[0] as string,
+    options: {
+      schema: {
+        ...defaultArgs,
+        schemaId: parsedArgs.id,
+        encodeRefs: parsedArgs.refs,
+        topRef: parsedArgs.topRef,
+        additionalProperties: !parsedArgs.noExtraProps,
+        sortProps: parsedArgs.propOrder,
+        skipTypeCheck: !parsedArgs.strictNullChecks,
+      },
+      ajv: {
+        coerceTypes: parsedArgs.coerceTypes,
+        format: parsedArgs.format,
+        nullable: parsedArgs.nullable,
+        unicode: parsedArgs.unicode,
+        uniqueItems: parsedArgs.uniqueItems,
+        useDefaults: false,
+      },
+    },
+  };
 }

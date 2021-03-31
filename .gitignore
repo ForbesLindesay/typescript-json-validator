@@ -26,8 +26,8 @@ lib
 environment.toml
 .env
 
-src/__tests__/**/*.validator.ts
+__tests__/**/*.validator.ts
+__tests__/validators/output/
 .vscode
-src/Example.validator.ts
 tsconfig.tsbuildinfo
 .dccache

@@ -1,70 +1,83 @@
 version: 2.1
 
 orbs:
-    node: circleci/node@5.0.2
+  node: circleci/node@5.0.2
+  win: circleci/windows@4.1.1
+
+executors:
+  linux:
+    docker:
+      - image: node:16
+    working_directory: ~/repo
+  windows:
+    machine:
+      image: windows-server-2022-gui:current
+    resource_class: windows.medium
+    shell: bash.exe
 
 refs:
-    container: &container
-        docker:
-            - image: node:16
-        working_directory: ~/repo
-    steps:
-        - &PNPM
-          run:
-              name: Install PNPM
-              command: npm i -g pnpm
-        - &Versions
-          run:
-              name: Versions
-              command: node -v && npm -v && pnpm -v
-        - &Install
-          run:
-              name: Install Dependencies
-              command: pnpm install
-        - &Build
-          run:
-              name: Build
-              command: pnpm build
-        - &Test
-          run:
-              name: Test
-              command: pnpm ci:test
-
+  steps:
+    - &InstallNode
+      node/install:
+        node-version: << parameters.node-version >>
+    - &PNPM
+      run:
+        name: Install PNPM
+        command: nvm v & node -v && npm -v && npm install -g pnpm
+    - &Versions
+      run:
+        name: Versions
+        command: node -v && npm -v && npx pnpm -v
+    - &Install
+      run:
+        name: Install Dependencies
+        command: npx pnpm install
+    - &Build
+      run:
+        name: Build
+        command: npx pnpm build
+    - &Test
+      run:
+        name: Test
+        command: npx pnpm ci:test
+    - &EnsureNode
+      run:
+        name: EnsureNode
+        command: nvm use << parameters.node-version >> ; npm i -g which-
 jobs:
-    test:
-        <<: *container
-        steps:
-            - checkout
-            - *PNPM
-            - *Versions
-            - *Install
-            - *Test
-            - *Build
-
-    publish:
-        <<: *container
-        steps:
-            - checkout
-            - *Versions
-            - *Install
-            - *Test
-            - *Build
-            - run:
-                  name: NPM Auth
-                  command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-            - run:
-                  name: Release
-                  command: |
-                      npx semantic-release && \
-                      npx cross-ci :run \
-                          npx commit-status success Version "'\${PROJECT_VERSION}'"
+  test:
+    parameters:
+      os:
+        type: executor
+      node-version:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - when:
+          condition:
+            equal:
+              - 'Linux'
+              - << parameters.os >>
+          steps:
+            - *InstallNode
+            - *EnsureNode
+      - *PNPM
+      - *Versions
+      - checkout
+      - *Install
+      - *Test
+      - *Build
 workflows:
-    version: 2
-    all:
-        jobs:
-            - test:
-                  filters:
-                      branches:
-                          ignore:
-                              - master
-                              - gh-pages
+  version: 2
+  all:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              os: [linux, windows]
+              node-version: [16.15.0]
+          filters:
+            branches:
+              ignore:
+                - master
+                - gh-pages

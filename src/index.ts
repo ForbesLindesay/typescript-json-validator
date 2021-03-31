@@ -1,121 +1,121 @@
-import { writeFileSync } from 'fs';
-import stringify from 'json-stable-stringify';
-import { forEach, isEmpty, has, uniqBy } from 'lodash';
-import { posix } from 'path';
-import { exit } from 'process';
-import { Tsconfig } from 'tsconfig-loader';
+import {existsSync, writeFileSync, mkdirSync} from 'fs';
+import * as path from 'path';
+import {parseArgs} from './parseArgs';
+import {
+  printSingleTypeValidator,
+  printTypeCollectionValidator,
+} from './printValidator';
+import prettierFile from './prettierFile';
 import loadTsConfig from './loadTsConfig';
 import normalizeSchema from './normalizeSchema';
-import parse, { ParsedResults } from './parse';
-import { Options, parseArgs } from './parseArgs';
-import prettierFile from './prettierFile';
-import { printSingleTypeValidator, printTypeCollectionValidator } from './printValidator';
+import {createParser} from './schemaGenerator';
+import {Tsconfig} from 'tsconfig-loader';
+import {isBoolean, isEmpty} from 'lodash';
 
-export { parse, parseArgs, printSingleTypeValidator, printTypeCollectionValidator };
+export {parseArgs, printSingleTypeValidator, printTypeCollectionValidator};
 
-function process(
-	sourceFile: string,
-	parsed: ParsedResults,
+const {basename, dirname, resolve, relative, isAbsolute} = path;
 
-	tsConfig: Tsconfig,
-	useNamedExport: boolean,
-	options: Options,
-	typeName: string | undefined,
-) {
-	if (typeName) {
-		const { schema, symbolsByFile } = parsed.getType(typeName);
-		const normalSchema = normalizeSchema(schema);
-		const validator = printSingleTypeValidator(typeName, useNamedExport, normalSchema, sourceFile, symbolsByFile, tsConfig, options.formatMode, options);
-		return { normalSchema, validator };
-	} else {
-		const { symbols, schema, symbolsByFile } = parsed.getAllTypes();
-		const normalSchema = normalizeSchema(schema);
-		const validator = printTypeCollectionValidator(symbols, useNamedExport, normalSchema, posix.resolve(sourceFile), symbolsByFile, tsConfig, options.formatMode, options);
-		return { normalSchema, validator };
-	}
+/**
+ *  Create full path for the outfile, does not write the file. If
+ *  the path is not within the same directory as the script was
+ *  run from , then it will throw an error.
+ *
+ * @param outputFilePath File path to write validators to, in os format
+ */
+function makeOutput(outputFilePath: string) {
+  const dir = dirname(outputFilePath);
+  if (!existsSync(dir)) {
+    const parent = resolve(process.cwd());
+    const child = resolve(dir);
+    const rel = relative(parent, child);
+    const isRelative = rel && !rel.startsWith('..') && !isAbsolute(rel);
+    if (!isRelative) {
+      throw new Error(
+        `Output (${outputFilePath}) directory must be at or below the current directory (${parent})`,
+      );
+    }
+    mkdirSync(rel);
+  }
 }
 
-type FileNameType = {
-	outputFileName: string;
-	baseFileName: string;
-	outFileNotSpecified: boolean;
-	fileName: string;
-};
-type FileNameTypeWithTypename = {
-	outputFileName: string;
-	baseFileName: string;
-	outFileNotSpecified: boolean;
-	fileName: string;
-	typeName: string | undefined;
-};
-function getOutputFilename(filename: string, specifiedOutput: string | undefined): FileNameType {
-	const baseFileName = filename.replace(/\.tsx?$/, '');
-	const outFileNotSpecified = !specifiedOutput;
-	const outputFileName: string = specifiedOutput ? specifiedOutput : `${baseFileName}.validator.ts`;
-
-	return {
-		outputFileName,
-		baseFileName,
-		outFileNotSpecified,
-		fileName: filename,
-	};
+function toPosixPath(p: string): string {
+  if (p.includes('\\')) {
+    return p.replaceAll('\\', '/');
+  }
+  return p;
 }
+
+/**
+ *
+ *  Generates a relative posix from the Output Validator file to the Input Typescript file.
+ * `
+ * @param inputPath the path to the typescript file, in os format
+ * @param outputFilePath the path to the output validator file, , in os format
+ * @returns Returns the relative path from output to input, in posix format
+ */
+function getRelativePath(inputPath: string, outputFilePath: string): string {
+  const outputDir = path.dirname(outputFilePath);
+  const inputDir = path.dirname(inputPath);
+
+  const rel = toPosixPath(path.relative(outputDir, inputDir));
+  const relFinal = isEmpty(rel) || rel === '.' ? '.' : rel;
+  return relFinal;
+}
+
+/**
+ *
+ *  Generateas the schema based on args or process.args. Saves the results to file.
+ *
+ * @param args Will be used instead of process.args when parsing arguments
+ */
 export default function run(args?: string[]) {
-	const { files, options } = parseArgs(args);
-	const tsConfig: Tsconfig = loadTsConfig();
-	const parsed = parse(
-		files.map((f) => f.fileName),
-		tsConfig,
-		options.schema,
-	);
-	if (options.separateSchemaFile && !tsConfig.resolveJsonModule) {
-		console.error(`You requested to store schema in json file, but tsconfg does not resovle json modules. `);
-		console.error(`Please set resolveJsonModule to true in your tsconfig`);
-		exit(1);
-	}
+  const {files, glob, output, options} = parseArgs(args);
+  const tsConfigResults = loadTsConfig();
+  const tsConfig: Tsconfig = tsConfigResults.tsConfig;
 
-	const fileMapedToOut = files.reduce((acc, { fileName, typeName }) => {
-		const data: FileNameTypeWithTypename = {
-			...getOutputFilename(fileName, options.output),
-			typeName,
-		};
+  const newParser = createParser(glob, tsConfigResults, options.schema);
 
-		if (!has(acc, data.outputFileName)) {
-			acc[data.outputFileName] = [];
-			acc[data.outputFileName].push(data);
-			return acc;
-		}
-
-		acc[data.outputFileName] = uniqBy([...acc[data.outputFileName], data], 'typeName');
-
-		return acc;
-	}, {} as Record<string, FileNameTypeWithTypename[]>);
-	forEach(fileMapedToOut, (data: FileNameTypeWithTypename[]) => {
-		forEach(data, ({ fileName, typeName, outputFileName, outFileNotSpecified, baseFileName }) => {
-			//const {outputFileName, outFileNotSpecified, baseFileName} = getOutputFilename(fileName, options.output);
-			options.output = outputFileName;
-			options.filename = isEmpty(options.filename) ? baseFileName : options.filename;
-			const { normalSchema, validator } = process(
-				fileName,
-				parsed,
-
-				tsConfig,
-
-				options.useNamedExport,
-
-				options,
-				typeName,
-			);
-
-			writeFileSync(outputFileName, validator);
-			prettierFile(outputFileName);
-			if (options.separateSchemaFile) {
-				const fn = `${options.filename}.json`;
-				writeFileSync(fn, stringify(normalSchema));
-				prettierFile(fn);
-			}
-			//if output filename is set, executing the loop again will only overwrite the files.
-			return !outFileNotSpecified;
-		});
-	});
+  const parsed = newParser;
+  files.forEach(({fileName, typeName}) => {
+    const outputFileName =
+      output ?? fileName.replace(/\.tsx?$/, '.validator.ts');
+    makeOutput(outputFileName);
+    let validator: string;
+    if (typeName) {
+      const schema = parsed.getType(typeName);
+      if (isBoolean(schema)) {
+        throw new Error(`Schema is boolean, but should be Definition`);
+      }
+      validator = printSingleTypeValidator(
+        parsed,
+        typeName,
+        normalizeSchema(schema),
+        `${getRelativePath(fileName, outputFileName)}/${basename(
+          fileName,
+          /\.ts$/.test(fileName) ? '.ts' : '.tsx',
+        )}`,
+        tsConfig,
+        options.ajv,
+      );
+    } else {
+      const {symbols, schema} = parsed.getAllTypes();
+      if (isBoolean(schema)) {
+        throw new Error(`Schema is boolean, but should be Definition`);
+      }
+      validator = printTypeCollectionValidator(
+        parsed,
+        symbols,
+        normalizeSchema(schema),
+        `${getRelativePath(fileName, outputFileName)}/${basename(
+          fileName,
+          /\.ts$/.test(fileName) ? '.ts' : '.tsx',
+        )}`,
+        tsConfig,
+        options.ajv,
+      );
+    }
+    writeFileSync(outputFileName, validator);
+    prettierFile(outputFileName);
+  });
 }
