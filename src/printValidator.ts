@@ -25,6 +25,7 @@ export function printTypeCollectionValidator(
   });
   return [
     t.TSLINT_DISABLE,
+    t.ESLINT_DISABLE,
     t.GENERATED_COMMENT,
     t.IMPORT_AJV(tsConfig),
     t.importNamedTypes(symbols, relativePath),
@@ -52,6 +53,7 @@ export function printSingleTypeValidator(
 ) {
   return [
     t.TSLINT_DISABLE,
+    t.ESLINT_DISABLE,
     t.GENERATED_COMMENT,
     t.IMPORT_INSPECT,
     t.IMPORT_AJV(tsConfig),
