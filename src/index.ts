@@ -21,7 +21,6 @@ export {
     printTypeCollectionValidator,
 };
 
-
 function process(
     sourceFile: string,
     parsed: ParsedResults,
@@ -146,7 +145,6 @@ export default function run(args?: string[]) {
                 const {normalSchema, validator} = process(
                     fileName,
                     parsed,
-
 
                     tsConfig,
 

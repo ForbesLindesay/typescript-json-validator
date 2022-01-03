@@ -44,7 +44,6 @@
         "ts-node": "^8.3.0",
         "tslint": "^5.10.0",
         "typescript": "^3.4.5"
-
     },
     "jest": {
         "watchPathIgnorePatterns": [
@@ -87,5 +86,5 @@
     "peerDependencies": {
         "ajv": "^6.12.0"
     },
-    "version": "2.7.0"
+    "version": "2.8.0"
 }
