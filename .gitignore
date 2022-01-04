@@ -29,3 +29,5 @@ environment.toml
 src/__tests__/**/*.validator.ts
 .vscode
 src/Example.validator.ts
+tsconfig.tsbuildinfo
+.dccache

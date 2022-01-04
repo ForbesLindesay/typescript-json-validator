@@ -8,15 +8,15 @@ Define a type in `src/Example.ts`, e.g.:
 
 ```ts
 export default interface ExampleType {
-    value: string;
-    /**
-     * @TJS-format email
-     */
-    email?: string;
-    /**
-     * @default 42
-     */
-    answer: number;
+	value: string;
+	/**
+	 * @TJS-format email
+	 */
+	email?: string;
+	/**
+	 * @default 42
+	 */
+	answer: number;
 }
 ```
 
@@ -29,7 +29,7 @@ npx typescript-json-validator src/Example.ts ExampleType
 This will generate `src/Example.validator.ts`, which you can use:
 
 ```ts
-import {readFileSync} from 'fs';
+import { readFileSync } from 'fs';
 import validate from './Example.validator.ts';
 
 const value: unknown = JSON.parse(readFileSync(process.argv[2], 'utf8'));
@@ -85,14 +85,6 @@ Options:
   --rejectDateType      Rejects Date fields in type definitions.
                                                       [boolean] [default: false]
   --id                  ID of schema.                     [string] [default: ""]
-  --uniqueItems         Validate `uniqueItems` keyword [boolean] [default: true]
-  --unicode             calculate correct length of strings with unicode pairs
-                        (true by default). Pass false to use .length of strings
-                        that is faster, but gives "incorrect" lengths of strings
-                        with unicode pairs - each unicode pair is counted as two
-                        characters.                    [boolean] [default: true]
-  --nullable            support keyword "nullable" from Open API 3
-                        specification.                 [boolean] [default: true]
   --format              formats validation mode ('fast' by default). Pass 'full'
                         for more correct and slow validation or false not to
                         validate formats at all. E.g., 25:00:00 and 2015/14/33
@@ -101,6 +93,26 @@ Options:
                                      [choices: "fast", "full"] [default: "fast"]
   --coerceTypes         Change data type of data to match type keyword. e.g.
                         parse numbers in strings      [boolean] [default: false]
+  --strictAll           Value for all ajv strict options, unless overriden by
+                        other options (https://bit.ly/3flXX6z)
+                                  [choices: "log", true, false] [default: false]
+  --strict              Value for all ajv strict options, unless overriden by
+                        other options (https://bit.ly/3flXX6z)
+                                                   [choices: "log", true, false]
+  --strictSchema        Prevent unknown keywords,  (https://bit.ly/3flXX6z)
+                                                   [choices: "log", true, false]
+  --strictNumbers       Whether to accept NaN and Infinity as number types
+                        during validation,  (https://bit.ly/3flXX6z)
+                                                   [choices: "log", true, false]
+  --strictTypes         Imposes additional restrictions on how type keyword is
+                        used,  (https://bit.ly/3rfsetf)
+                                                   [choices: "log", true, false]
+  --strictTuples        https://bit.ly/3FruEKe     [choices: "log", true, false]
+  --strictRequired      Logs warning or throws exception if the property used in
+                        "required" keyword is not defined in "properties"
+                        keyword in the same or some parent schema relating to
+                        the same object ( (https://bit.ly/3rd5Bpf)
+                                                   [choices: "log", true, false]
   --collection          Process the file as a collection of types, instead of
                         one single type.              [boolean] [default: false]
   --useNamedExport      Type name is a named export, rather than the default

@@ -1,90 +1,70 @@
 {
-    "name": "@rkesters/typescript-json-validator",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
-    "bin": {
-        "typescript-json-validator": "./lib/cli.js"
-    },
-    "files": [
-        "lib/"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/rkesters/typescript-json-validator.git"
-    },
-    "scripts": {
-        "test": "jest --no-cache",
-        "test:coverage": "yarn test --coverage",
-        "test:watch": "yarn test --watch",
-        "posttest": "tsc --noEmit",
-        "clean": "rimraf lib && rimraf src/Example.validator.ts",
-        "prebuild": "yarn clean",
-        "build": "tsc",
-        "build:watch": "yarn build -w",
-        "postbuild": "node lib/usage && node lib/cli src/Example.ts ExampleType && node lib/cli src/DisjointUnionExample.ts --collection && rimraf lib/__tests__ && rimraf src/Example.validator.ts",
-        "precommit": "pretty-quick --staged",
-        "prepush": "yarn prettier:diff && yarn test",
-        "prettier": "prettier --ignore-path .gitignore --write './**/*.{js,jsx,ts,tsx}'",
-        "prettier:diff": "prettier --ignore-path .gitignore --list-different './**/*.{js,jsx,ts,tsx}'",
-        "ci:test": "yarn prettier:diff && yarn test"
-    },
-    "devDependencies": {
-        "@types/jest": "^23.1.5",
-        "@types/koa": "^2.0.48",
-        "@types/koa-router": "^7.0.39",
-        "@types/node": "^10.5.2",
-        "@types/rimraf": "^2.0.2",
-        "ajv": "^6.12.0",
-        "husky": "^0.14.3",
-        "jest": "^23.3.0",
-        "prettier": "^2.3.2",
-        "pretty-quick": "^1.6.0",
-        "rimraf": "^2.6.2",
-        "ts-jest": "^23.0.0",
-        "ts-node": "^8.3.0",
-        "tslint": "^5.10.0",
-        "typescript": "^3.4.5"
-    },
-    "jest": {
-        "watchPathIgnorePatterns": [
-            ".*/lib/.*",
-            ".*/src/Example.validator\\.ts",
-            ".*/src/__tests__/output/.*"
-        ],
-        "moduleFileExtensions": [
-            "ts",
-            "js"
-        ],
-        "testEnvironment": "node",
-        "transform": {
-            "^.+\\.ts$": "ts-jest"
-        },
-        "transformIgnorePatterns": [],
-        "testRegex": ".*/__tests__/.*\\.(test|spec)\\.ts$",
-        "globals": {
-            "ts-jest": {
-                "diagnostics": false
-            }
-        }
-    },
-    "dependencies": {
-        "@types/ajv": "^1.0.0",
-        "@types/cross-spawn": "^6.0.0",
-        "@types/glob": "^7.1.1",
-        "@types/json-stable-stringify": "^1.0.32",
-        "@types/lodash": "^4.14.168",
-        "@types/minimatch": "^3.0.3",
-        "cross-spawn": "^6.0.5",
-        "glob": "^7.1.3",
-        "json-stable-stringify": "^1.0.1",
-        "lodash": "^4.17.21",
-        "minimatch": "^3.0.4",
-        "tsconfig-loader": "^1.1.0",
-        "typescript-json-schema": "^0.38.3",
-        "yargs": "^13.2.4"
-    },
-    "peerDependencies": {
-        "ajv": "^6.12.0"
-    },
-    "version": "2.8.0"
+	"name": "@rkesters/typescript-json-validator",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"bin": {
+		"typescript-json-validator": "./lib/cli.js"
+	},
+	"files": [
+		"lib/"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rkesters/typescript-json-validator.git"
+	},
+	"scripts": {
+		"test": "jest --no-cache",
+		"test:coverage": "yarn test --coverage",
+		"test:watch": "yarn test --watch",
+		"posttest": "tsc --noEmit",
+		"clean": "rimraf lib && rimraf src/Example.validator.ts && npx tsc --build --clean",
+		"prebuild": "yarn clean",
+		"build": "  npx tsc",
+		"build:watch": "yarn build -w",
+		"postbuild": "node lib/usage && node lib/cli src/Example.ts ExampleType && node lib/cli src/DisjointUnionExample.ts --collection && rimraf lib/__tests__ && rimraf src/Example.validator.ts",
+		"precommit": "pretty-quick --staged",
+		"prepush": "yarn prettier:diff && yarn test",
+		"prettier": "prettier --ignore-path .gitignore --write './**/*.{js,jsx,ts,tsx}'",
+		"prettier:diff": "prettier --ignore-path .gitignore --list-different './**/*.{js,jsx,ts,tsx}'",
+		"ci:test": "yarn prettier:diff && yarn test"
+	},
+	"devDependencies": {
+		"@types/jest": "^27.4.0",
+		"@types/koa": "^2.0.48",
+		"@types/koa-router": "^7.0.39",
+		"@types/node": "16.7.10",
+		"@types/rimraf": "^2.0.2",
+		"ajv": "^8.8.2",
+		"ajv-formats": "^2.1.1",
+		"husky": "^0.14.3",
+		"jest": "27.4.7",
+		"jest-summary-reporter": "^0.0.2",
+		"prettier": "^2.5.1",
+		"pretty-quick": "^3.1.3",
+		"rimraf": "^2.6.2",
+		"ts-jest": "27.1.2",
+		"ts-node": "10.4.0",
+		"tslint": "^5.10.0",
+		"typescript": "4.5.4"
+	},
+	"dependencies": {
+		"@types/cross-spawn": "^6.0.0",
+		"@types/glob": "^7.1.1",
+		"@types/json-stable-stringify": "^1.0.32",
+		"@types/lodash": "^4.14.168",
+		"@types/minimatch": "^3.0.3",
+		"cross-spawn": "^6.0.5",
+		"glob": "^7.1.3",
+		"json-stable-stringify": "^1.0.1",
+		"lodash": "^4.17.21",
+		"minimatch": "^3.0.4",
+		"tsconfig-loader": "^1.1.0",
+		"typescript-json-schema": "0.52.0",
+		"yargs": "^13.2.4"
+	},
+	"peerDependencies": {
+		"ajv": "^8.8.2",
+		"ajv-formats": "^2.1.1"
+	},
+	"version": "2.8.0"
 }
