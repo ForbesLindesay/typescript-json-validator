@@ -3,7 +3,6 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { formatNames } from 'ajv-formats/dist/formats';
 import loadTsConfig from '../loadTsConfig';
-import { ajv } from '../DisjointUnionExample.validator';
 
 test('parse', () => {
 	expect(parse([__dirname + '/../ComplexExample.ts'], loadTsConfig()).getAllTypes()).toMatchInlineSnapshot(`
