@@ -49,7 +49,7 @@ export const Schema = {
 						defaultProperties: [],
 						properties: {
 							baz: {
-								type: 'integer',
+								type: 'number',
 							},
 							type: {
 								enum: ['TypeThree'],
