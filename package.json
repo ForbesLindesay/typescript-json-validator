@@ -26,7 +26,8 @@
 		"prepush": "yarn prettier:diff && yarn test",
 		"prettier": "prettier --ignore-path .gitignore --write './**/*.{js,jsx,ts,tsx}'",
 		"prettier:diff": "prettier --ignore-path .gitignore --list-different './**/*.{js,jsx,ts,tsx}'",
-		"ci:test": "yarn prettier:diff && yarn test"
+		"ci:test": "yarn prettier:diff && yarn test",
+		"prepublish": "yarn build"
 	},
 	"devDependencies": {
 		"@types/jest": "^27.4.0",
@@ -66,5 +67,5 @@
 		"ajv": "^8.8.2",
 		"ajv-formats": "^2.1.1"
 	},
-	"version": "3.0.1"
+	"version": "3.0.2"
 }
