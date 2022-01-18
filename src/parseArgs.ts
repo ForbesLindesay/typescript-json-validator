@@ -181,7 +181,7 @@ export function parseArgs(args?: string[]): ParsedArgs {
 				rejectDateType: parsedArgs.rejectDateType,
 				id: parsedArgs.id,
 				esModuleInterop: true,
-				defaultNumberType: 'integer',
+				defaultNumberType: 'number',
 				tsNodeRegister: true,
 			},
 			ajv: {
