@@ -23,7 +23,7 @@ export default interface ExampleType {
 To generate a validator, run:
 
 ```
-npx typescript-json-validator src/Example.ts ExampleType
+npx @rkesters/typescript-json-validator src/Example.ts ExampleType
 ```
 
 This will generate `src/Example.validator.ts`, which you can use:
