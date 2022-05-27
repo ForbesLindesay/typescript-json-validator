@@ -1,4 +1,4 @@
-import { basename } from 'path';
+import { posix } from 'path';
 import { sync as globSync } from 'glob';
 import { getDefaultArgs, Args as TypeScriptJsonSchemaArgs } from 'typescript-json-schema';
 import * as Ajv from 'ajv';
@@ -145,7 +145,7 @@ export function parseArgs(args?: string[]): ParsedArgs {
 			if (isCollection) {
 				files.push({ fileName });
 			} else {
-				const typeName = parsedArgs._[1] || basename(fileName, '.ts');
+				const typeName = parsedArgs._[1] || posix.basename(fileName, '.ts');
 				files.push({ fileName, typeName });
 			}
 		});

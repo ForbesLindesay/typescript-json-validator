@@ -3,116 +3,122 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { formatNames } from 'ajv-formats/dist/formats';
 import loadTsConfig from '../loadTsConfig';
+import { mapKeys } from 'lodash';
+import path from 'path';
 
 test('parse', () => {
-	expect(parse([__dirname + '/../ComplexExample.ts'], loadTsConfig()).getAllTypes()).toMatchInlineSnapshot(`
-        Object {
-          "schema": Object {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "definitions": Object {
-              "MyEnum": Object {
-                "enum": Array [
-                  0,
-                  1,
-                  2,
-                ],
-                "type": "number",
-              },
-              "RequestA": Object {
-                "properties": Object {
-                  "body": Object {
-                    "$ref": "#/definitions/TypeB",
-                  },
-                  "params": Object {
-                    "properties": Object {
-                      "e": Object {
-                        "$ref": "#/definitions/MyEnum",
-                      },
-                    },
-                    "required": Array [
-                      "e",
-                    ],
-                    "type": "object",
-                  },
-                  "query": Object {
-                    "$ref": "#/definitions/TypeA",
-                  },
-                },
-                "required": Array [
-                  "body",
-                  "params",
-                  "query",
-                ],
-                "type": "object",
-              },
-              "RequestB": Object {
-                "properties": Object {
-                  "query": Object {
-                    "$ref": "#/definitions/TypeA",
-                  },
-                },
-                "required": Array [
-                  "query",
-                ],
-                "type": "object",
-              },
-              "TypeA": Object {
-                "properties": Object {
-                  "id": Object {
-                    "type": "number",
-                  },
-                  "value": Object {
-                    "type": "string",
-                  },
-                },
-                "required": Array [
-                  "id",
-                  "value",
-                ],
-                "type": "object",
-              },
-              "TypeB": Object {
-                "properties": Object {
-                  "id": Object {
-                    "type": Array [
-                      "null",
-                      "number",
-                    ],
-                  },
-                  "value": Object {
-                    "format": "date-time",
-                    "type": Array [
-                      "null",
-                      "string",
-                    ],
-                  },
-                },
-                "required": Array [
-                  "id",
-                  "value",
-                ],
-                "type": "object",
-              },
-            },
-          },
-          "symbols": Array [
-            "MyEnum",
-            "TypeA",
-            "TypeB",
-            "RequestA",
-            "RequestB",
-          ],
-          "symbolsByFile": Object {
-            "/Users/kestersor/work/github/typescript-json-validator/src/ComplexExample": Array [
-              "MyEnum",
-              "TypeA",
-              "TypeB",
-              "RequestA",
-              "RequestB",
-            ],
-          },
-        }
-    `);
+	const actual = parse([__dirname + '/../ComplexExample.ts'], loadTsConfig()).getAllTypes();
+	actual.symbolsByFile = mapKeys(actual.symbolsByFile, (_, k) => {
+		return path.posix.relative(process.cwd(), k);
+	});
+	expect(actual).toMatchInlineSnapshot(`
+		Object {
+		  "schema": Object {
+		    "$schema": "http://json-schema.org/draft-07/schema#",
+		    "definitions": Object {
+		      "MyEnum": Object {
+		        "enum": Array [
+		          0,
+		          1,
+		          2,
+		        ],
+		        "type": "number",
+		      },
+		      "RequestA": Object {
+		        "properties": Object {
+		          "body": Object {
+		            "$ref": "#/definitions/TypeB",
+		          },
+		          "params": Object {
+		            "properties": Object {
+		              "e": Object {
+		                "$ref": "#/definitions/MyEnum",
+		              },
+		            },
+		            "required": Array [
+		              "e",
+		            ],
+		            "type": "object",
+		          },
+		          "query": Object {
+		            "$ref": "#/definitions/TypeA",
+		          },
+		        },
+		        "required": Array [
+		          "body",
+		          "params",
+		          "query",
+		        ],
+		        "type": "object",
+		      },
+		      "RequestB": Object {
+		        "properties": Object {
+		          "query": Object {
+		            "$ref": "#/definitions/TypeA",
+		          },
+		        },
+		        "required": Array [
+		          "query",
+		        ],
+		        "type": "object",
+		      },
+		      "TypeA": Object {
+		        "properties": Object {
+		          "id": Object {
+		            "type": "number",
+		          },
+		          "value": Object {
+		            "type": "string",
+		          },
+		        },
+		        "required": Array [
+		          "id",
+		          "value",
+		        ],
+		        "type": "object",
+		      },
+		      "TypeB": Object {
+		        "properties": Object {
+		          "id": Object {
+		            "type": Array [
+		              "null",
+		              "number",
+		            ],
+		          },
+		          "value": Object {
+		            "format": "date-time",
+		            "type": Array [
+		              "null",
+		              "string",
+		            ],
+		          },
+		        },
+		        "required": Array [
+		          "id",
+		          "value",
+		        ],
+		        "type": "object",
+		      },
+		    },
+		  },
+		  "symbols": Array [
+		    "MyEnum",
+		    "TypeA",
+		    "TypeB",
+		    "RequestA",
+		    "RequestB",
+		  ],
+		  "symbolsByFile": Object {
+		    "src/ComplexExample": Array [
+		      "MyEnum",
+		      "TypeA",
+		      "TypeB",
+		      "RequestA",
+		      "RequestB",
+		    ],
+		  },
+		}
+	`);
 });
 
 test('ajv', () => {

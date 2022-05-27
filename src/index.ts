@@ -1,7 +1,7 @@
 import { writeFileSync } from 'fs';
 import stringify from 'json-stable-stringify';
 import { forEach, isEmpty, has, uniqBy } from 'lodash';
-import { resolve } from 'path';
+import { posix } from 'path';
 import { exit } from 'process';
 import { Tsconfig } from 'tsconfig-loader';
 import loadTsConfig from './loadTsConfig';
@@ -30,7 +30,7 @@ function process(
 	} else {
 		const { symbols, schema, symbolsByFile } = parsed.getAllTypes();
 		const normalSchema = normalizeSchema(schema);
-		const validator = printTypeCollectionValidator(symbols, useNamedExport, normalSchema, resolve(sourceFile), symbolsByFile, tsConfig, options.formatMode, options);
+		const validator = printTypeCollectionValidator(symbols, useNamedExport, normalSchema, posix.resolve(sourceFile), symbolsByFile, tsConfig, options.formatMode, options);
 		return { normalSchema, validator };
 	}
 }

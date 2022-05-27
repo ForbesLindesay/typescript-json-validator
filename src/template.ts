@@ -1,7 +1,7 @@
 import * as Ajv from 'ajv';
 import stringify from 'json-stable-stringify';
 import * as TJS from 'typescript-json-schema';
-import { basename, relative, dirname, resolve } from 'path';
+import { posix } from 'path';
 import { isEmpty, isNil, remove } from 'lodash';
 import { isDefinition } from './utils';
 
@@ -34,8 +34,8 @@ export const importType = (name: string, output: string, source: string, symbols
 };
 
 function getRelativeName(source: string, target: string): string {
-	const baseFilename = basename(source, /\.ts$/.test(source) ? '.ts' : '.tsx');
-	const relativePath = relative(dirname(resolve(target)), dirname(resolve(source)));
+	const baseFilename = posix.basename(source, /\.ts$/.test(source) ? '.ts' : '.tsx');
+	const relativePath = posix.relative(posix.dirname(posix.resolve(target)), posix.dirname(posix.resolve(source)));
 	return isEmpty(relativePath) ? `./${baseFilename}` : `${relativePath}/${baseFilename}`;
 }
 

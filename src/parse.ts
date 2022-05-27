@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { posix } from 'path';
 import * as TJS from 'typescript-json-schema';
 import { isEmpty, has } from 'lodash';
 import { Tsconfig } from 'tsconfig-loader';
@@ -41,7 +41,7 @@ function generateFileToSymbolMap(symbols: string[], generator: TJS.JsonSchemaGen
 }
 
 export default function parse(filenames: string[], tsConfig: Readonly<Tsconfig>, settings: TJS.PartialArgs = {}): ParsedResults {
-	filenames = filenames.map((f) => resolve(f).replace(/\\/g, '/'));
+	filenames = filenames.map((f) => posix.resolve(f).replace(/\\/g, '/'));
 	const program = TJS.getProgramFromFiles(filenames, tsConfig);
 
 	const generator = TJS.buildGenerator(program, {
