@@ -25,9 +25,6 @@ lib
 # Config files
 environment.toml
 .env
-
-__tests__/**/*.validator.ts
-__tests__/validators/output/
 .vscode
 tsconfig.tsbuildinfo
 .dccache

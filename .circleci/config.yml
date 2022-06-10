@@ -1,79 +1,83 @@
-version: 2
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.2
+  win: circleci/windows@4.1.1
+
+executors:
+  linux:
+    docker:
+      - image: node:16
+    working_directory: ~/repo
+  windows:
+    machine:
+      image: windows-server-2022-gui:current
+    resource_class: windows.medium
+    shell: bash.exe
 
 refs:
-  container: &container
-    docker:
-      - image: node:10
-    working_directory: ~/repo
   steps:
+    - &InstallNode
+      node/install:
+        node-version: << parameters.node-version >>
+    - &PNPM
+      run:
+        name: Install PNPM
+        command: nvm v & node -v && npm -v && npm install -g pnpm
     - &Versions
       run:
         name: Versions
-        command: node -v && npm -v && yarn -v
+        command: node -v && npm -v && npx pnpm -v
     - &Install
       run:
         name: Install Dependencies
-        command: yarn install --pure-lockfile
+        command: npx pnpm install
     - &Build
       run:
         name: Build
-        command: yarn build
+        command: npx pnpm build
     - &Test
       run:
         name: Test
-        command: yarn ci:test
-
+        command: npx pnpm ci:test
+    - &EnsureNode
+      run:
+        name: EnsureNode
+        command: nvm use << parameters.node-version >> ; npm i -g which-
 jobs:
   test:
-    <<: *container
+    parameters:
+      os:
+        type: executor
+      node-version:
+        type: string
+    executor: << parameters.os >>
     steps:
-      - checkout
+      - when:
+          condition:
+            equal:
+              - 'Linux'
+              - << parameters.os >>
+          steps:
+            - *InstallNode
+            - *EnsureNode
+      - *PNPM
       - *Versions
+      - checkout
       - *Install
       - *Test
       - *Build
-
-  publish:
-    <<: *container
-    steps:
-      - checkout
-      - *Versions
-      - *Install
-      - *Test
-      - *Build
-      - run:
-          name: NPM Auth
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-      - run:
-          name: Release
-          command: |
-            npx semantic-release && \
-            npx cross-ci :run \
-                npx commit-status success Version "'\${PROJECT_VERSION}'"
 workflows:
   version: 2
   all:
     jobs:
       - test:
+          matrix:
+            parameters:
+              os: [linux, windows]
+              node-version: [16.15.0]
           filters:
             branches:
               ignore:
                 - master
                 - gh-pages
-  master:
-    jobs:
-      - publish:
-          context: common-env
-          filters:
-            branches:
-              only: master
-  monthly:
-    triggers:
-      - schedule:
-          cron: '0 0 1 * *'
-          filters:
-            branches:
-              only: master
-    jobs:
-      - test:
-          context: common-env

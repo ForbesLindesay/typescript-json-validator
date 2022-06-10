@@ -1,4 +1,4 @@
-import {validate} from '../DisjointUnionExample.validator';
+import {validate} from './validators/DisjointUnionExample.validator';
 
 // let validate: any;
 

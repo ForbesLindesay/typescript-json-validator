@@ -1,10 +1,26 @@
-import run from '../';
+import run from '../src';
+import rimrafCB from 'rimraf';
+import {promisify} from 'util';
+const rimraf = promisify(rimrafCB);
 
-// let validate: any;
-
-test('run', () => {
-  run(['src/Example.ts', 'ExampleType']);
-  // validate = require('../Example.validator').default;
+describe('run', () => {
+  beforeAll(() => {
+    run([
+      '-o',
+      './__tests__/validators/output/Example.validator.ts',
+      '--collection',
+      './__tests__/build-parameters/src/Example.ts',
+      'ExampleType',
+    ]);
+  });
+  afterAll(async () => {
+    return rimraf('./__test__/validators/output', {});
+  });
+  test('run', async () => {
+    // @ts-ignore
+    const validate = await import('./validators/output/Example.validator');
+    expect(validate).toBeDefined();
+  });
 });
 
 // test('valid', () => {

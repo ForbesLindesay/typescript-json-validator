@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
+    "lib": ["es2018", "ES2021.String"],
     "moduleResolution": "Node",
     "noImplicitAny": true,
     "skipLibCheck": true,
@@ -20,9 +21,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "declaration": true,
-    "lib": ["es2018"],
     "incremental": false
   },
-  "include": ["src"],
-  "exclude": ["src/__tests__/build-parameters"]
+  "include": ["src", "__tests__"],
+  "exclude": ["__tests__"]
 }

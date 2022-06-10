@@ -1,29 +1,33 @@
 import * as TJS from 'typescript-json-schema';
+import {
+  JSONSchema7Definition as Definition,
+  JSONSchema7,
+  JSONSchema7TypeName,
+} from 'json-schema';
+import {isBoolean, isNil} from 'lodash';
+import {JSONSchema7Type} from 'json-schema';
 
-export default function normalizeSchema(
-  schema: TJS.Definition,
-): TJS.Definition {
+type DefinitionMap = {
+  [key: string]: Definition;
+};
+export default function normalizeSchema(schema: JSONSchema7): JSONSchema7 {
   let result = schema;
-  if (schema.anyOf && schema.definitions) {
+  const definitions: DefinitionMap | undefined = schema.definitions;
+  if (schema.anyOf && definitions) {
     let {anyOf, ...extra} = schema;
-    result = {...processAnyOf(anyOf, schema.definitions), ...extra};
+    result = {
+      ...processAnyOf(anyOf, definitions),
+      ...extra,
+    };
   }
-  let outputDefinitions: {
-    [key: string]: TJS.Definition;
-  } = {};
+  let outputDefinitions: DefinitionMap = {};
   if (schema.definitions) {
-    const defs: {
-      [key: string]: TJS.Definition;
-    } = schema.definitions;
-    Object.keys(defs).forEach(definition => {
-      if (
-        defs[definition].anyOf &&
-        Object.keys(defs[definition]).length === 1
-      ) {
-        outputDefinitions[definition] = processAnyOf(
-          defs[definition].anyOf!,
-          defs,
-        );
+    const defs: DefinitionMap = schema.definitions;
+    Object.keys(defs).forEach((definition: keyof typeof defs) => {
+      const def = defs[definition];
+      if (!isDefinition(def)) return;
+      if (def.anyOf && Object.keys(def).length === 1) {
+        outputDefinitions[definition] = processAnyOf(def.anyOf, defs);
       } else {
         outputDefinitions[definition] = defs[definition];
       }
@@ -31,19 +35,18 @@ export default function normalizeSchema(
   }
   return {
     ...result,
-    definitions: schema.definitions ? outputDefinitions : schema.definitions,
+    definitions: schema.definitions ?? outputDefinitions,
   };
   return schema;
 }
 
 function processAnyOf(
-  types: TJS.Definition[],
-  definitions: {
-    [key: string]: TJS.Definition;
-  },
-): TJS.Definition {
-  function resolve(ref: TJS.Definition) {
+  types: Definition[],
+  definitions: DefinitionMap,
+): JSONSchema7 {
+  function resolve(ref: undefined | Definition): Definition | undefined {
     let match;
+    if (!isDefinition(ref)) return;
     if (
       ref.$ref &&
       (match = /\#\/definitions\/([a-zA-Z0-9_]+)/.exec(ref.$ref)) &&
@@ -55,32 +58,34 @@ function processAnyOf(
     }
   }
   const resolved = types.map(resolve);
-  const typeKeys = intersect(resolved.map(getCandidates)).filter(candidate => {
-    const seen = new Set<number | string>();
-    const firstType = getType(resolved[0], candidate);
-    return resolved.every(type => {
-      const v = getValue(type, candidate);
-      if (seen.has(v) || getType(type, candidate) !== firstType) {
-        return false;
-      } else {
-        seen.add(v);
-        return true;
-      }
-    });
-  });
+  const typeKeys = intersect(resolved.map(getCandidates)).filter(
+    (candidate) => {
+      const seen = new Set<JSONSchema7Type>();
+      const firstType = getType(resolved[0], candidate);
+      return resolved.every((type) => {
+        const v = getValue(type, candidate);
+        if (seen.has(v) || getType(type, candidate) !== firstType) {
+          return false;
+        } else {
+          seen.add(v);
+          return true;
+        }
+      });
+    },
+  );
   if (typeKeys.length !== 1) {
     return {anyOf: types};
   }
   const key = typeKeys[0];
   const type = getType(resolved[0], key);
 
-  function recurse(remainingTypes: TJS.Definition[]): TJS.Definition {
+  function recurse(remainingTypes: Definition[]): Definition {
     if (remainingTypes.length === 0) {
       return {
         properties: {
           [key]: {
-            type,
-            enum: resolved.map(type => getValue(type, key)),
+            type: type,
+            enum: resolved.map((type) => getValue(type, key)),
           },
         },
         required: [key],
@@ -98,27 +103,62 @@ function processAnyOf(
       } as any;
     }
   }
-  return recurse(types);
+  const out = recurse(types);
+  if (isBoolean(out)) {
+    return {};
+  }
+  return out;
 }
 
-function getCandidates(type: TJS.Definition) {
-  const required = type.required || [];
-  return required.filter(
-    key =>
-      type.properties &&
-      type.properties[key] &&
-      (type.properties[key].type === 'string' ||
-        type.properties[key].type === 'number') &&
-      type.properties[key].enum &&
-      type.properties[key].enum.length === 1,
-  );
+export function isDefinition(
+  value: TJS.DefinitionOrBoolean | undefined | null,
+): value is JSONSchema7 {
+  if (isNil(value)) return false;
+  if (typeof value === 'boolean') return false;
+
+  return true;
 }
-function getType(type: TJS.Definition, key: string): string {
-  return type.properties![key].type;
+
+function getCandidates(type: TJS.DefinitionOrBoolean | undefined) {
+  if (!isDefinition(type)) return [];
+  const required = type.required ?? [];
+  return required.filter((key) => {
+    if (isNil(type.properties)) return false;
+    const property = type.properties[key];
+    if (!isDefinition(property)) return false;
+
+    return (
+      (property.type === 'string' || property.type === 'number') &&
+      property.enum &&
+      property.enum.length === 1
+    );
+  });
 }
-function getValue(type: TJS.Definition, key: string): string | number {
-  return type.properties![key].enum[0];
+function getType(
+  type: Definition | undefined,
+  key: string,
+): JSONSchema7TypeName | JSONSchema7TypeName[] | undefined {
+  if (!isDefinition(type)) {
+    throw new Error(`getType type was a boolean, should be a Definition`);
+  }
+  const property = type.properties?.[key];
+  if (property && isDefinition(property)) {
+    return property?.type;
+  }
+  throw new Error(`getType type was a boolean, should be a Definition`);
+}
+function getValue(
+  type: TJS.DefinitionOrBoolean | undefined,
+  key: string,
+): JSONSchema7Type {
+  if (!type) return '';
+  if (!isDefinition(type)) return '';
+  const property: TJS.Definition = (type.properties![
+    key
+  ] as unknown) as TJS.Definition;
+  const e: JSONSchema7Type[] = (property.enum as unknown) as JSONSchema7Type[];
+  return e[0];
 }
 function intersect(values: string[][]): string[] {
-  return values[0].filter(v => values.every(vs => vs.includes(v)));
+  return values[0].filter((v) => values.every((vs) => vs.includes(v)));
 }

@@ -1,8 +1,14 @@
-import loadTsconfig from 'tsconfig-loader';
+import loadTsconfig, {TsConfigLoaderResult} from 'tsconfig-loader';
 
-export default function loadTsConfig(cwd: string = process.cwd()) {
+export default function loadTsConfig(
+  cwd: string = process.cwd(),
+): TsConfigLoaderResult {
   const result = loadTsconfig({cwd});
-  const compilerOptions = result?.tsConfig.compilerOptions || {};
+  if (!result) {
+    throw new Error('Unable to load tsconfig.ts');
+  }
+
+  const compilerOptions = result.tsConfig.compilerOptions || {};
   if (
     compilerOptions.experimentalDecorators === false &&
     compilerOptions.emitDecoratorMetadata === undefined
@@ -21,5 +27,6 @@ export default function loadTsConfig(cwd: string = process.cwd()) {
   // https://github.com/microsoft/TypeScript/blob/dcb763f62435ebb015e7fa405eb067de3254f217/src/compiler/program.ts#L2847
   delete compilerOptions.tsBuildInfoFile;
 
-  return compilerOptions;
+  result.tsConfig.compilerOptions = compilerOptions;
+  return result;
 }

@@ -1,0 +1,1132 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Use schemaGenerator to parse ComplexExample.ts 1`] = `
+Object {
+  "schema": Object {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": Object {
+      "MyEnum": Object {
+        "enum": Array [
+          0,
+          1,
+          2,
+        ],
+        "type": "number",
+      },
+      "RequestA": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "body": Object {
+            "$ref": "#/definitions/TypeB",
+          },
+          "params": Object {
+            "additionalProperties": undefined,
+            "properties": Object {
+              "e": Object {
+                "$ref": "#/definitions/MyEnum",
+              },
+            },
+            "required": Array [
+              "e",
+            ],
+            "type": "object",
+          },
+          "query": Object {
+            "$ref": "#/definitions/TypeA",
+          },
+        },
+        "required": Array [
+          "query",
+          "body",
+          "params",
+        ],
+        "type": "object",
+      },
+      "RequestB": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "query": Object {
+            "$ref": "#/definitions/TypeA",
+          },
+        },
+        "required": Array [
+          "query",
+        ],
+        "type": "object",
+      },
+      "TypeA": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "id": Object {
+            "type": "number",
+          },
+          "value": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "id",
+          "value",
+        ],
+        "type": "object",
+      },
+      "TypeB": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "id": Object {
+            "type": Array [
+              "number",
+              "null",
+            ],
+          },
+          "value": Object {
+            "format": "date-time",
+            "type": Array [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": Array [
+          "id",
+          "value",
+        ],
+        "type": "object",
+      },
+    },
+  },
+  "symbols": Array [
+    "MyEnum",
+    "TypeA",
+    "TypeB",
+    "RequestA",
+    "RequestB",
+  ],
+}
+`;
+
+exports[`Use schemaGenerator to parse ComplexExample.ts 2`] = `
+Object {
+  "$ref": "#/definitions/TypeA",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": Object {
+    "TypeA": Object {
+      "additionalProperties": undefined,
+      "properties": Object {
+        "id": Object {
+          "type": "number",
+        },
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "required": Array [
+        "id",
+        "value",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`Use schemaGenerator to parse ComplexExample.ts 3`] = `"TypeA"`;
+
+exports[`Use schemaGenerator to parse DisjointUnionExample.ts 1`] = `
+Object {
+  "schema": Object {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": Object {
+      "Entity": Object {
+        "anyOf": Array [
+          Object {
+            "$ref": "#/definitions/EntityOne",
+          },
+          Object {
+            "$ref": "#/definitions/EntityTwo",
+          },
+          Object {
+            "additionalProperties": undefined,
+            "properties": Object {
+              "baz": Object {
+                "type": "number",
+              },
+              "type": Object {
+                "const": "TypeThree",
+                "type": "string",
+              },
+            },
+            "required": Array [
+              "type",
+              "baz",
+            ],
+            "type": "object",
+          },
+        ],
+      },
+      "EntityOne": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "foo": Object {
+            "type": "string",
+          },
+          "type": Object {
+            "const": "TypeOne",
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "type",
+          "foo",
+        ],
+        "type": "object",
+      },
+      "EntityTwo": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "bar": Object {
+            "type": "string",
+          },
+          "type": Object {
+            "const": "TypeTwo",
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "type",
+          "bar",
+        ],
+        "type": "object",
+      },
+      "EntityTypes": Object {
+        "enum": Array [
+          "TypeOne",
+          "TypeTwo",
+          "TypeThree",
+        ],
+        "type": "string",
+      },
+      "Value": Object {
+        "anyOf": Array [
+          Object {
+            "additionalProperties": undefined,
+            "properties": Object {
+              "foo": Object {
+                "type": "string",
+              },
+              "number": Object {
+                "const": 0,
+                "type": "number",
+              },
+            },
+            "required": Array [
+              "number",
+              "foo",
+            ],
+            "type": "object",
+          },
+          Object {
+            "additionalProperties": undefined,
+            "properties": Object {
+              "bar": Object {
+                "type": "string",
+              },
+              "number": Object {
+                "const": 1,
+                "type": "number",
+              },
+            },
+            "required": Array [
+              "number",
+              "bar",
+            ],
+            "type": "object",
+          },
+          Object {
+            "additionalProperties": undefined,
+            "properties": Object {
+              "baz": Object {
+                "type": "string",
+              },
+              "number": Object {
+                "const": 2,
+                "type": "number",
+              },
+            },
+            "required": Array [
+              "number",
+              "baz",
+            ],
+            "type": "object",
+          },
+        ],
+      },
+    },
+  },
+  "symbols": Array [
+    "EntityTypes",
+    "EntityOne",
+    "EntityTwo",
+    "Entity",
+    "Value",
+  ],
+}
+`;
+
+exports[`Use schemaGenerator to parse DisjointUnionExample.ts 2`] = `
+Object {
+  "$ref": "#/definitions/EntityOne",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": Object {
+    "EntityOne": Object {
+      "additionalProperties": undefined,
+      "properties": Object {
+        "foo": Object {
+          "type": "string",
+        },
+        "type": Object {
+          "const": "TypeOne",
+          "type": "string",
+        },
+      },
+      "required": Array [
+        "type",
+        "foo",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`Use schemaGenerator to parse DisjointUnionExample.ts 3`] = `"EntityOne"`;
+
+exports[`Use schemaGenerator to parse Example.ts 1`] = `
+Object {
+  "schema": Object {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": Object {
+      "ExampleClass": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "answer": Object {
+            "default": 42,
+            "type": "number",
+          },
+          "email": Object {
+            "format": "email",
+            "type": "string",
+          },
+          "value": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "value",
+          "answer",
+        ],
+        "type": "object",
+      },
+      "ExampleType": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "answer": Object {
+            "default": 42,
+            "type": "number",
+          },
+          "email": Object {
+            "format": "email",
+            "type": "string",
+          },
+          "value": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "value",
+          "answer",
+        ],
+        "type": "object",
+      },
+      "Foo": Object {
+        "type": "string",
+      },
+    },
+  },
+  "symbols": Array [
+    "ExampleType",
+    "ExampleClass",
+    "Foo",
+  ],
+}
+`;
+
+exports[`Use schemaGenerator to parse Example.ts 2`] = `
+Object {
+  "$ref": "#/definitions/ExampleClass",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": Object {
+    "ExampleClass": Object {
+      "additionalProperties": undefined,
+      "properties": Object {
+        "answer": Object {
+          "default": 42,
+          "type": "number",
+        },
+        "email": Object {
+          "format": "email",
+          "type": "string",
+        },
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "required": Array [
+        "value",
+        "answer",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`Use schemaGenerator to parse Example.ts 3`] = `"ExampleClass"`;
+
+exports[`Use schemaGenerator to parse OmitExample.ts 1`] = `
+Object {
+  "schema": Object {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": Object {
+      "ISchema": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "id": Object {
+            "type": "string",
+          },
+          "schema": Object {
+            "$ref": "#/definitions/JSONSchema7",
+          },
+          "uischema": Object {
+            "$ref": "#/definitions/IUiSchemaNoReact",
+          },
+        },
+        "required": Array [
+          "id",
+          "schema",
+        ],
+        "type": "object",
+      },
+      "IUiSchemaNoReact": Object {
+        "additionalProperties": Object {},
+        "properties": Object {
+          "ui:field": Object {
+            "type": "string",
+          },
+          "ui:options": Object {
+            "additionalProperties": Object {
+              "anyOf": Array [
+                Object {
+                  "type": "boolean",
+                },
+                Object {
+                  "type": "number",
+                },
+                Object {
+                  "type": "string",
+                },
+                Object {
+                  "additionalProperties": Object {},
+                  "type": "object",
+                },
+                Object {
+                  "items": Object {},
+                  "type": "array",
+                },
+                Object {
+                  "type": "null",
+                },
+              ],
+            },
+            "type": "object",
+          },
+          "ui:order": Object {
+            "items": Object {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "ui:widget": Object {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "JSONSchema7": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "$comment": Object {
+            "type": "string",
+          },
+          "$defs": Object {
+            "additionalProperties": Object {
+              "$ref": "#/definitions/JSONSchema7Definition",
+            },
+            "type": "object",
+          },
+          "$id": Object {
+            "type": "string",
+          },
+          "$ref": Object {
+            "type": "string",
+          },
+          "$schema": Object {
+            "$ref": "#/definitions/JSONSchema7Version",
+          },
+          "additionalItems": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "additionalProperties": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "allOf": Object {
+            "items": Object {
+              "$ref": "#/definitions/JSONSchema7Definition",
+            },
+            "type": "array",
+          },
+          "anyOf": Object {
+            "items": Object {
+              "$ref": "#/definitions/JSONSchema7Definition",
+            },
+            "type": "array",
+          },
+          "const": Object {
+            "$ref": "#/definitions/JSONSchema7Type",
+          },
+          "contains": Object {
+            "$ref": "#/definitions/JSONSchema7",
+          },
+          "contentEncoding": Object {
+            "type": "string",
+          },
+          "contentMediaType": Object {
+            "type": "string",
+          },
+          "default": Object {
+            "$ref": "#/definitions/JSONSchema7Type",
+          },
+          "definitions": Object {
+            "additionalProperties": Object {
+              "$ref": "#/definitions/JSONSchema7Definition",
+            },
+            "type": "object",
+          },
+          "dependencies": Object {
+            "additionalProperties": Object {
+              "anyOf": Array [
+                Object {
+                  "$ref": "#/definitions/JSONSchema7Definition",
+                },
+                Object {
+                  "items": Object {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+              ],
+            },
+            "type": "object",
+          },
+          "description": Object {
+            "type": "string",
+          },
+          "else": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "enum": Object {
+            "items": Object {
+              "$ref": "#/definitions/JSONSchema7Type",
+            },
+            "type": "array",
+          },
+          "examples": Object {
+            "$ref": "#/definitions/JSONSchema7Type",
+          },
+          "exclusiveMaximum": Object {
+            "type": "number",
+          },
+          "exclusiveMinimum": Object {
+            "type": "number",
+          },
+          "format": Object {
+            "type": "string",
+          },
+          "if": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "items": Object {
+            "anyOf": Array [
+              Object {
+                "$ref": "#/definitions/JSONSchema7Definition",
+              },
+              Object {
+                "items": Object {
+                  "$ref": "#/definitions/JSONSchema7Definition",
+                },
+                "type": "array",
+              },
+            ],
+          },
+          "maxItems": Object {
+            "type": "number",
+          },
+          "maxLength": Object {
+            "type": "number",
+          },
+          "maxProperties": Object {
+            "type": "number",
+          },
+          "maximum": Object {
+            "type": "number",
+          },
+          "minItems": Object {
+            "type": "number",
+          },
+          "minLength": Object {
+            "type": "number",
+          },
+          "minProperties": Object {
+            "type": "number",
+          },
+          "minimum": Object {
+            "type": "number",
+          },
+          "multipleOf": Object {
+            "type": "number",
+          },
+          "not": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "oneOf": Object {
+            "items": Object {
+              "$ref": "#/definitions/JSONSchema7Definition",
+            },
+            "type": "array",
+          },
+          "pattern": Object {
+            "type": "string",
+          },
+          "patternProperties": Object {
+            "additionalProperties": Object {
+              "$ref": "#/definitions/JSONSchema7Definition",
+            },
+            "type": "object",
+          },
+          "properties": Object {
+            "additionalProperties": Object {
+              "$ref": "#/definitions/JSONSchema7Definition",
+            },
+            "type": "object",
+          },
+          "propertyNames": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "readOnly": Object {
+            "type": "boolean",
+          },
+          "required": Object {
+            "items": Object {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "then": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "title": Object {
+            "type": "string",
+          },
+          "type": Object {
+            "anyOf": Array [
+              Object {
+                "$ref": "#/definitions/JSONSchema7TypeName",
+              },
+              Object {
+                "items": Object {
+                  "$ref": "#/definitions/JSONSchema7TypeName",
+                },
+                "type": "array",
+              },
+            ],
+          },
+          "uniqueItems": Object {
+            "type": "boolean",
+          },
+          "writeOnly": Object {
+            "type": "boolean",
+          },
+        },
+        "type": "object",
+      },
+      "JSONSchema7Array": Object {
+        "additionalProperties": undefined,
+        "properties": Object {
+          "length": Object {
+            "type": "number",
+          },
+        },
+        "required": Array [
+          "length",
+        ],
+        "type": "object",
+      },
+      "JSONSchema7Definition": Object {
+        "anyOf": Array [
+          Object {
+            "$ref": "#/definitions/JSONSchema7",
+          },
+          Object {
+            "type": "boolean",
+          },
+        ],
+        "description": "JSON Schema v7",
+      },
+      "JSONSchema7Object": Object {
+        "additionalProperties": Object {
+          "$ref": "#/definitions/JSONSchema7Type",
+        },
+        "type": "object",
+      },
+      "JSONSchema7Type": Object {
+        "anyOf": Array [
+          Object {
+            "type": "string",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "$ref": "#/definitions/JSONSchema7Object",
+          },
+          Object {
+            "$ref": "#/definitions/JSONSchema7Array",
+          },
+          Object {
+            "type": "null",
+          },
+        ],
+        "description": "Primitive type",
+      },
+      "JSONSchema7TypeName": Object {
+        "description": "Primitive type",
+        "enum": Array [
+          "string",
+          "number",
+          "integer",
+          "boolean",
+          "object",
+          "array",
+          "null",
+        ],
+        "type": "string",
+      },
+      "JSONSchema7Version": Object {
+        "description": "Meta schema
+
+Recommended values:
+- 'http://json-schema.org/schema#'
+- 'http://json-schema.org/hyper-schema#'
+- 'http://json-schema.org/draft-07/schema#'
+- 'http://json-schema.org/draft-07/hyper-schema#'",
+        "type": "string",
+      },
+    },
+  },
+  "symbols": Array [
+    "IUiSchemaNoReact",
+    "ISchema",
+    "JSONSchema7",
+    "JSONSchema7Version",
+    "JSONSchema7Definition",
+    "JSONSchema7TypeName",
+    "JSONSchema7Type",
+    "JSONSchema7Object",
+    "JSONSchema7Array",
+  ],
+}
+`;
+
+exports[`Use schemaGenerator to parse OmitExample.ts 2`] = `
+Object {
+  "$ref": "#/definitions/ISchema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": Object {
+    "ISchema": Object {
+      "additionalProperties": undefined,
+      "properties": Object {
+        "id": Object {
+          "type": "string",
+        },
+        "schema": Object {
+          "$ref": "#/definitions/JSONSchema7",
+        },
+        "uischema": Object {
+          "$ref": "#/definitions/IUiSchemaNoReact",
+        },
+      },
+      "required": Array [
+        "id",
+        "schema",
+      ],
+      "type": "object",
+    },
+    "IUiSchemaNoReact": Object {
+      "additionalProperties": Object {},
+      "properties": Object {
+        "ui:field": Object {
+          "type": "string",
+        },
+        "ui:options": Object {
+          "additionalProperties": Object {
+            "anyOf": Array [
+              Object {
+                "type": "boolean",
+              },
+              Object {
+                "type": "number",
+              },
+              Object {
+                "type": "string",
+              },
+              Object {
+                "additionalProperties": Object {},
+                "type": "object",
+              },
+              Object {
+                "items": Object {},
+                "type": "array",
+              },
+              Object {
+                "type": "null",
+              },
+            ],
+          },
+          "type": "object",
+        },
+        "ui:order": Object {
+          "items": Object {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "ui:widget": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "JSONSchema7": Object {
+      "additionalProperties": undefined,
+      "properties": Object {
+        "$comment": Object {
+          "type": "string",
+        },
+        "$defs": Object {
+          "additionalProperties": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "type": "object",
+        },
+        "$id": Object {
+          "type": "string",
+        },
+        "$ref": Object {
+          "type": "string",
+        },
+        "$schema": Object {
+          "$ref": "#/definitions/JSONSchema7Version",
+        },
+        "additionalItems": Object {
+          "$ref": "#/definitions/JSONSchema7Definition",
+        },
+        "additionalProperties": Object {
+          "$ref": "#/definitions/JSONSchema7Definition",
+        },
+        "allOf": Object {
+          "items": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "type": "array",
+        },
+        "anyOf": Object {
+          "items": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "type": "array",
+        },
+        "const": Object {
+          "$ref": "#/definitions/JSONSchema7Type",
+        },
+        "contains": Object {
+          "$ref": "#/definitions/JSONSchema7",
+        },
+        "contentEncoding": Object {
+          "type": "string",
+        },
+        "contentMediaType": Object {
+          "type": "string",
+        },
+        "default": Object {
+          "$ref": "#/definitions/JSONSchema7Type",
+        },
+        "definitions": Object {
+          "additionalProperties": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "type": "object",
+        },
+        "dependencies": Object {
+          "additionalProperties": Object {
+            "anyOf": Array [
+              Object {
+                "$ref": "#/definitions/JSONSchema7Definition",
+              },
+              Object {
+                "items": Object {
+                  "type": "string",
+                },
+                "type": "array",
+              },
+            ],
+          },
+          "type": "object",
+        },
+        "description": Object {
+          "type": "string",
+        },
+        "else": Object {
+          "$ref": "#/definitions/JSONSchema7Definition",
+        },
+        "enum": Object {
+          "items": Object {
+            "$ref": "#/definitions/JSONSchema7Type",
+          },
+          "type": "array",
+        },
+        "examples": Object {
+          "$ref": "#/definitions/JSONSchema7Type",
+        },
+        "exclusiveMaximum": Object {
+          "type": "number",
+        },
+        "exclusiveMinimum": Object {
+          "type": "number",
+        },
+        "format": Object {
+          "type": "string",
+        },
+        "if": Object {
+          "$ref": "#/definitions/JSONSchema7Definition",
+        },
+        "items": Object {
+          "anyOf": Array [
+            Object {
+              "$ref": "#/definitions/JSONSchema7Definition",
+            },
+            Object {
+              "items": Object {
+                "$ref": "#/definitions/JSONSchema7Definition",
+              },
+              "type": "array",
+            },
+          ],
+        },
+        "maxItems": Object {
+          "type": "number",
+        },
+        "maxLength": Object {
+          "type": "number",
+        },
+        "maxProperties": Object {
+          "type": "number",
+        },
+        "maximum": Object {
+          "type": "number",
+        },
+        "minItems": Object {
+          "type": "number",
+        },
+        "minLength": Object {
+          "type": "number",
+        },
+        "minProperties": Object {
+          "type": "number",
+        },
+        "minimum": Object {
+          "type": "number",
+        },
+        "multipleOf": Object {
+          "type": "number",
+        },
+        "not": Object {
+          "$ref": "#/definitions/JSONSchema7Definition",
+        },
+        "oneOf": Object {
+          "items": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "type": "array",
+        },
+        "pattern": Object {
+          "type": "string",
+        },
+        "patternProperties": Object {
+          "additionalProperties": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "type": "object",
+        },
+        "properties": Object {
+          "additionalProperties": Object {
+            "$ref": "#/definitions/JSONSchema7Definition",
+          },
+          "type": "object",
+        },
+        "propertyNames": Object {
+          "$ref": "#/definitions/JSONSchema7Definition",
+        },
+        "readOnly": Object {
+          "type": "boolean",
+        },
+        "required": Object {
+          "items": Object {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "then": Object {
+          "$ref": "#/definitions/JSONSchema7Definition",
+        },
+        "title": Object {
+          "type": "string",
+        },
+        "type": Object {
+          "anyOf": Array [
+            Object {
+              "$ref": "#/definitions/JSONSchema7TypeName",
+            },
+            Object {
+              "items": Object {
+                "$ref": "#/definitions/JSONSchema7TypeName",
+              },
+              "type": "array",
+            },
+          ],
+        },
+        "uniqueItems": Object {
+          "type": "boolean",
+        },
+        "writeOnly": Object {
+          "type": "boolean",
+        },
+      },
+      "type": "object",
+    },
+    "JSONSchema7Array": Object {
+      "additionalProperties": undefined,
+      "properties": Object {
+        "length": Object {
+          "type": "number",
+        },
+      },
+      "required": Array [
+        "length",
+      ],
+      "type": "object",
+    },
+    "JSONSchema7Definition": Object {
+      "anyOf": Array [
+        Object {
+          "$ref": "#/definitions/JSONSchema7",
+        },
+        Object {
+          "type": "boolean",
+        },
+      ],
+      "description": "JSON Schema v7",
+    },
+    "JSONSchema7Object": Object {
+      "additionalProperties": Object {
+        "$ref": "#/definitions/JSONSchema7Type",
+      },
+      "type": "object",
+    },
+    "JSONSchema7Type": Object {
+      "anyOf": Array [
+        Object {
+          "type": "string",
+        },
+        Object {
+          "type": "number",
+        },
+        Object {
+          "type": "boolean",
+        },
+        Object {
+          "$ref": "#/definitions/JSONSchema7Object",
+        },
+        Object {
+          "$ref": "#/definitions/JSONSchema7Array",
+        },
+        Object {
+          "type": "null",
+        },
+      ],
+      "description": "Primitive type",
+    },
+    "JSONSchema7TypeName": Object {
+      "description": "Primitive type",
+      "enum": Array [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "object",
+        "array",
+        "null",
+      ],
+      "type": "string",
+    },
+    "JSONSchema7Version": Object {
+      "description": "Meta schema
+
+Recommended values:
+- 'http://json-schema.org/schema#'
+- 'http://json-schema.org/hyper-schema#'
+- 'http://json-schema.org/draft-07/schema#'
+- 'http://json-schema.org/draft-07/hyper-schema#'",
+      "type": "string",
+    },
+  },
+}
+`;
+
+exports[`Use schemaGenerator to parse OmitExample.ts 3`] = `"ISchema"`;
+
+exports[`Validating with ajv for ComplexExample.ts 1`] = `"x should be equal to one of the allowed values"`;
+
+exports[`Validating with ajv for ComplexExample.ts 2`] = `"x.query.id should be number, x should have required property 'body', x.params.e should be equal to one of the allowed values"`;
+
+exports[`Validating with ajv for Example.ts 1`] = `"x.email should match format \\"email\\""`;
+
+exports[`Validating with ajv for Example.ts 2`] = `"x.answer should be number"`;
+
+exports[`Validating with ajv for Example.ts 3`] = `"x.email should match format \\"email\\""`;
+
+exports[`Validating with ajv for Example.ts 4`] = `"x.answer should be number"`;
+
+exports[`Validating with ajv for OmitExample.ts 1`] = `"x.schema should be object"`;
